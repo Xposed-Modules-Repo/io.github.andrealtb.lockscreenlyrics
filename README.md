@@ -2,118 +2,106 @@
 
 ## 简体中文
 
-ColorOS Live Lyrics Bridge 是一个基于 LSPosed/libxposed API 102 的模块，用来把受支持音乐播放器的时间轴歌词桥接到 ColorOS/OPlus 锁屏岛-锁屏歌词管线。
+将受支持音乐播放器的时间轴歌词桥接到 ColorOS/OPlus 原生锁屏歌词界面，并补充逐字高亮、翻译切换、媒体卡片和后台恢复能力。
 
-项目源码：
+### 主要功能
 
-https://github.com/Andrea-lyz/ColorOS-Live-Lyrics-Bridge
+- 内置 Salt Player 与 ConePlayer 兼容适配器。
+- 支持播放器通过 `MediaMetadata["lyricInfo"]` 主动接入，无需依赖模块 APK。
+- 支持逐行 LRC、逐字 `rawLyric`、翻译行识别和重复歌词稳定定位。
+- 修复快速切歌时有歌词/无歌词曲目之间的歌词错绑。
+- 保留播放器原始媒体 action 语义，仅通过 OPlus Rule0 提供翻译按钮，避免上一首、播放/暂停、下一首错位。
+- Salt Player 完全停止后可从 ColorOS 历史媒体卡片恢复播放。
+- ConePlayer 冷启动恢复播放时可从已选中音轨元数据恢复歌词。
+- 内置播放器自动接入 OPlus 历史播放器；外部播放器可通过 Manifest 元数据主动申请接入。
 
-### 功能
+### 推荐作用域
 
-- 内置 Salt Player 兼容适配器。
-- 内置 ConePlayer 兼容适配器，包含正式包和 Google Play 包名。
-- 支持播放器主动发布 `lyricInfo` 接入协议。
-- `rawLyric` 可用时支持逐字歌词绘制。
-- 优化 ColorOS 锁屏歌词排版、长句换行、重复歌词定位、翻译行识别和切歌显示稳定性。
-- 在官方锁屏歌词 UI 实际可见且仍处于锁屏界面时，阻止屏幕按系统超时时间自动熄灭。
-- 支持锁屏歌词翻译按钮；当 Salt Player 等播放器没有发布旧版桌面歌词 action 时，模块会注入公开翻译开关 action，方便 ColorOS/SystemUI 构建翻译切换按钮。
-
-### 作用域
-
-本仓库的 `SCOPE` 文件列出了需要由 LSPosed 启用的静态作用域：
-
-```text
-com.salt.music
-ink.trantor.coneplayer
-ink.trantor.coneplayer.gp
-com.android.systemui
-```
-
-Salt Player 和 ConePlayer 属于兼容适配器，需要模块进入播放器进程抓取歌词。`com.android.systemui` 用于锁屏歌词绘制、翻译按钮显示和屏幕超时保活。
-
-### 播放器主动接入协议
-
-如果播放器本身已经拥有时间轴歌词，推荐直接在当前媒体会话中发布 `MediaMetadata["lyricInfo"]` JSON。主动接入的播放器通常不需要加入模块 APK 依赖，也不需要加入 LSPosed 播放器作用域；模块会在 SystemUI 侧从媒体会话中动态识别。
-
-基础 payload 示例：
+本仓库的 [`SCOPE`](SCOPE) 使用 LSPosed 模块仓库要求的 JSON 数组格式：
 
 ```json
-{
-  "songName": "...",
-  "artist": "...",
-  "songId": "lockscreen-lyrics-...",
-  "lyric": "[00:00.00]...",
-  "rawLyric": "[00:00.000]word[00:00.120]..."
-}
+["system", "com.salt.music", "ink.trantor.coneplayer", "ink.trantor.coneplayer.gp", "com.android.systemui"]
 ```
 
-- `lyric`：带时间戳的逐行 LRC，用于 ColorOS/OPlus 官方锁屏歌词列表。
-- `rawLyric`：可选，包含逐字时间轴；提供后模块会启用逐字歌词绘制。
-- 带时间戳的翻译行可以和主歌词一起放入原始歌词数据中，模块会在 SystemUI 侧合并识别。
+| 作用域 | 用途 |
+| --- | --- |
+| `system` | 在 system_server 中扩展 OPlus 历史播放器判断。 |
+| `com.salt.music` | Salt Player 歌词抓取与后台播放恢复。 |
+| `ink.trantor.coneplayer` | ConePlayer 正式版歌词适配。 |
+| `ink.trantor.coneplayer.gp` | ConePlayer Google Play 版歌词适配。 |
+| `com.android.systemui` | 锁屏歌词渲染、翻译按钮、媒体 action 与屏幕超时处理。 |
 
-完整协议、字段说明和 Media3 示例见源码仓库文档：
+外部播放器仅通过公开 `lyricInfo` 协议接入歌词时，通常无需加入播放器作用域。若需要进入 OPlus 历史播放器栈，可在自身 `AndroidManifest.xml` 中声明：
 
-https://github.com/Andrea-lyz/ColorOS-Live-Lyrics-Bridge/blob/main/docs/PLAYER_INTEGRATION.zh-CN.md
+```xml
+<meta-data
+    android:name="io.github.andrealtb.lockscreenlyrics.OPLUS_MEDIA_HISTORY"
+    android:value="true" />
+```
 
-### 安装
+该声明不会替播放器实现 `MediaSession`、媒体按键接收、后台服务启动或播放队列恢复。
 
-从 Releases 页面下载 APK，在 LSPosed 中按 `SCOPE` 启用模块，然后重启系统界面或直接重启设备。升级后建议同时重启目标播放器进程，确保播放器侧歌词 hook 与 SystemUI 侧锁屏歌词 hook 都重新加载。
+### 安装与升级
+
+1. 从 Releases 下载 APK 并安装。
+2. 在 LSPosed 中启用模块，并确认推荐作用域包含 `system`、`com.android.systemui` 和需要进程内适配的播放器。
+3. 重启设备，使 SystemUI、system_server 和播放器进程中的 Hook 完整加载。
+
+源码、完整接入协议和问题反馈：
+
+- [源码仓库](https://github.com/Andrea-lyz/ColorOS-Live-Lyrics-Bridge)
+- [播放器接入协议](https://github.com/Andrea-lyz/ColorOS-Live-Lyrics-Bridge/blob/main/docs/PLAYER_INTEGRATION.zh-CN.md)
+- [Issues](https://github.com/Andrea-lyz/ColorOS-Live-Lyrics-Bridge/issues)
 
 ## English
 
-ColorOS Live Lyrics Bridge is an LSPosed/libxposed API 102 module that bridges timed lyrics from supported Android music players into the ColorOS/OPlus lock-screen lyric pipeline.
+Bridges timed lyrics from supported music players into the native ColorOS/OPlus lock-screen lyric UI, with word-level highlighting, translation controls, media-card integration, and playback recovery.
 
-Source repository:
+### Highlights
 
-https://github.com/Andrea-lyz/ColorOS-Live-Lyrics-Bridge
+- Built-in compatibility adapters for Salt Player and ConePlayer.
+- Public `MediaMetadata["lyricInfo"]` protocol for self-integrating players without an APK dependency.
+- Line-timed LRC, word-timed `rawLyric`, translation detection, and stable repeated-line matching.
+- Protection against cross-track lyric binding during rapid switches between tracks with and without lyrics.
+- Preserves the player's original media-action semantics and exposes translation only through OPlus Rule0, preventing previous/play-pause/next slot corruption.
+- Restores Salt Player playback from the ColorOS history media card after the app has fully stopped.
+- Restores ConePlayer lyrics from selected audio-track metadata during background playback resumption.
+- Automatically accepts built-in adapters into OPlus media history; external players may opt in through manifest metadata.
 
-### Features
+### Recommended Scope
 
-- Built-in Salt Player compatibility adapter.
-- Built-in ConePlayer compatibility adapter, including the formal and Google Play package names.
-- Player-provided `lyricInfo` integration protocol.
-- Word-level lyric rendering when `rawLyric` is available.
-- Lock-screen lyric layout, long-line wrapping, repeated-line matching, translation-line recognition, and track-switch stability improvements.
-- Screen timeout keep-awake while the official lock-screen lyric UI is actually visible and the keyguard is still showing.
-- Lock-screen lyric translation button support. When players such as Salt Player do not publish the legacy desktop-lyrics action, the module injects the public translation toggle action so ColorOS/SystemUI can build the translation button.
-
-### Scope
-
-The `SCOPE` file in this repository lists the static LSPosed scope:
-
-```text
-com.salt.music
-ink.trantor.coneplayer
-ink.trantor.coneplayer.gp
-com.android.systemui
-```
-
-Salt Player and ConePlayer use compatibility adapters, so the module needs to run inside their player processes to capture lyrics. `com.android.systemui` is required for lock-screen lyric rendering, translation button visibility, and screen-timeout keep-awake.
-
-### Player Integration Protocol
-
-Players that already own timed lyrics should publish a `MediaMetadata["lyricInfo"]` JSON string in the active media session. A self-integrating player usually does not need to depend on the module APK or be added to the LSPosed player scope; the module detects the current media session dynamically from the SystemUI side.
-
-Basic payload example:
+The repository [`SCOPE`](SCOPE) follows the required JSON-array format:
 
 ```json
-{
-  "songName": "...",
-  "artist": "...",
-  "songId": "lockscreen-lyrics-...",
-  "lyric": "[00:00.00]...",
-  "rawLyric": "[00:00.000]word[00:00.120]..."
-}
+["system", "com.salt.music", "ink.trantor.coneplayer", "ink.trantor.coneplayer.gp", "com.android.systemui"]
 ```
 
-- `lyric`: timed line-level LRC for the native ColorOS/OPlus lock-screen lyric list.
-- `rawLyric`: optional word-level timeline; when provided, the module enables word-level rendering.
-- Timed translation lines may be included in the original lyric data and are merged on the SystemUI side.
+| Scope | Purpose |
+| --- | --- |
+| `system` | Extends OPlus media-history decisions in system_server. |
+| `com.salt.music` | Salt Player lyric capture and background playback recovery. |
+| `ink.trantor.coneplayer` | ConePlayer standard-package lyric adapter. |
+| `ink.trantor.coneplayer.gp` | ConePlayer Google Play-package lyric adapter. |
+| `com.android.systemui` | Lock-screen rendering, translation action, media actions, and screen-timeout handling. |
 
-Full protocol details, field definitions, and Media3 examples:
+External players that only publish the public `lyricInfo` payload usually do not need player-process scope. To opt into OPlus media history, an external player may declare:
 
-https://github.com/Andrea-lyz/ColorOS-Live-Lyrics-Bridge/blob/main/docs/PLAYER_INTEGRATION.md
+```xml
+<meta-data
+    android:name="io.github.andrealtb.lockscreenlyrics.OPLUS_MEDIA_HISTORY"
+    android:value="true" />
+```
+
+This declaration does not replace the player's own `MediaSession`, media-button receiver, playback service, or queue-restoration implementation.
 
 ### Installation
 
-Download the APK from Releases, enable the module in LSPosed for the packages listed in `SCOPE`, then restart System UI or reboot the device. After upgrading, also restart the target player process so both player-side lyric hooks and SystemUI-side lock-screen hooks are reloaded.
+1. Download and install the APK from Releases.
+2. Enable the module in LSPosed and confirm that `system`, `com.android.systemui`, and the required built-in player scopes are selected.
+3. Reboot the device so the SystemUI, system_server, and player-process hooks are loaded.
+
+Source, integration documentation, and support:
+
+- [Source repository](https://github.com/Andrea-lyz/ColorOS-Live-Lyrics-Bridge)
+- [Player integration protocol](https://github.com/Andrea-lyz/ColorOS-Live-Lyrics-Bridge/blob/main/docs/PLAYER_INTEGRATION.md)
+- [Issues](https://github.com/Andrea-lyz/ColorOS-Live-Lyrics-Bridge/issues)
