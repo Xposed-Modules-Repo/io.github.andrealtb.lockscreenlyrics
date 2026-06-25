@@ -1,230 +1,109 @@
 # ColorOS Live Lyrics Bridge
 
-[![Build Debug APK](https://github.com/Andrea-lyz/ColorOS-Live-Lyrics-Bridge/actions/workflows/build-debug.yml/badge.svg)](https://github.com/Andrea-lyz/ColorOS-Live-Lyrics-Bridge/actions/workflows/build-debug.yml)
+## 简体中文
 
-Languages: [English](README.md) | [简体中文](README.zh-CN.md)
+将受支持音乐播放器的时间轴歌词桥接到 ColorOS/OPlus 原生锁屏歌词界面，并补充逐字高亮、翻译切换、媒体卡片和后台恢复能力。
 
-<p align="center">
-  <img src="GIF.gif" alt="ColorOS Live Lyrics Bridge demo" width="360">
-</p>
+### 主要功能
 
-An LSPosed/libxposed API 102 module that bridges timed lyrics from supported Android music players into the ColorOS/OPlus lock-screen lyric pipeline.
+- 内置 Salt Player 与 ConePlayer 兼容适配器。
+- 支持播放器通过 `MediaMetadata["lyricInfo"]` 主动接入，无需依赖模块 APK。
+- 支持逐行 LRC、逐字 `rawLyric`、翻译行识别和重复歌词稳定定位。
+- 通过通用歌词事务层隔离异步回调，避免有歌词/无歌词曲目连续切换时歌词错绑或后续持续显示无歌词。
+- 长日语、中文歌词按 Unicode 字符边界换行，避免无空格长句被自动缩小。
+- 保留播放器原始媒体 action 语义，仅通过 OPlus Rule0 提供翻译按钮，避免上一首、播放/暂停、下一首错位。
+- Salt Player 完全停止后可从 ColorOS 历史媒体卡片恢复播放。
+- ConePlayer 冷启动恢复播放时可从已选中音轨元数据恢复歌词。
+- 内置播放器自动接入 OPlus 历史播放器；外部播放器可通过 Manifest 元数据主动申请接入。
 
-The module currently ships DexKit-based compatibility adapters for Salt Player and ConePlayer plus SystemUI renderer hooks. Other players should integrate by publishing the `lyricInfo` contract themselves.
+### 推荐作用域
 
-Since v2.0.0, release assets also include an optional `LyricProvider-QQMusic` APK. It is a separate LSPosed module for QQ Music that forwards complete lyric data to ColorOS Live Lyrics Bridge and Lyricon/词幕.
-
-A player-independent transaction layer associates lyric callbacks with media metadata. Events with media IDs, URIs, or complete title/artist hints bind directly; anonymous passive callbacks wait for the next stable metadata observation so preloads and instrumentals cannot shift lyrics across tracks.
-
-## What It Hooks
-
-Player process:
-
-```text
-android.media.session.MediaSession#setMetadata(android.media.MediaMetadata)
-```
-
-For built-in compatibility adapters, a valid lyric captured for the current track takes priority over a simple player-provided `MediaMetadata["lyricInfo"]` payload. The simple payload remains a fallback until capture succeeds. A player payload containing `rawLyric` or timed translation data is treated as an explicit enhanced integration and is kept. Self-integrating players should publish the same payload themselves.
+本仓库的 [`SCOPE`](SCOPE) 使用 LSPosed 模块仓库要求的 JSON 数组格式：
 
 ```json
-{
-  "songName": "...",
-  "artist": "...",
-  "songId": "lockscreen-lyrics-...",
-  "lyric": "[00:00.00]...",
-  "rawLyric": "[00:00.000]word[00:00.120]..."
-}
+["system", "com.salt.music", "ink.trantor.coneplayer", "ink.trantor.coneplayer.gp", "com.android.systemui"]
 ```
 
-SystemUI process:
+| 作用域 | 用途 |
+| --- | --- |
+| `system` | 在 system_server 中扩展 OPlus 历史播放器判断。 |
+| `com.salt.music` | Salt Player 歌词抓取与后台播放恢复。 |
+| `ink.trantor.coneplayer` | ConePlayer 正式版歌词适配。 |
+| `ink.trantor.coneplayer.gp` | ConePlayer Google Play 版歌词适配。 |
+| `com.android.systemui` | 锁屏歌词渲染、翻译按钮、媒体 action 与屏幕超时处理。 |
 
-- Reads `lyricInfo` from OPlus media data.
-- Normalizes the official line-level LRC so each timestamp produces one primary OPlus list item, while translations and word timing remain in the complete model.
-- Builds a word-level timeline from `rawLyric` when available.
-- Merges timed translation lines from the original `lyricInfo` into the word-level model.
-- Resolves private OPlus media and lyric targets through DexKit, with legacy class-name fallback.
-- Draws inside the official lock-screen lyric `TextView.onDraw(Canvas)` path.
-- Maps official items by timestamp, normalized text, and occurrence order so repeated lyrics and pre-roll lines remain stable.
-- Keeps `80dp` lyric slots with `6dp` spacing, tightens short-line density, uses a moving two-line window for long main lyrics, and places the active line about `48dp` below the viewport center.
-- Recovers lyric rendering after transient visibility changes without changing item geometry during playback.
-- Dynamically recognizes player-provided `lyricInfo` without a hard-coded package name.
-- Keeps the screen from timing out while the recognized provider's lock-screen lyric UI is actively visible.
+外部播放器仅通过公开 `lyricInfo` 协议接入歌词时，通常无需加入播放器作用域。若需要进入 OPlus 历史播放器栈，可在自身 `AndroidManifest.xml` 中声明：
 
-## Screen Timeout Keep-Awake
-
-The keep-awake logic runs only in the SystemUI process. It is intentionally tied to the official OPlus lock-screen lyric UI, not to playback alone.
-
-SystemUI hooks used by this feature:
-
-- `android.util.Log.i(String, String)`
-- `android.util.Log.println(int, String, String)`
-- OPlus Seedling media playback position/state hooks
-- Visible official lyric `TextView` tracking
-- `ACTION_SCREEN_OFF`, `ACTION_SCREEN_ON`, and `ACTION_USER_PRESENT` broadcasts inside SystemUI
-
-The module watches OPlus `PluginSeedling--Template` logs for supported player packages and checks fields such as:
-
-```text
-lyricUiMode=true
-lockImmersiveMode: true
-containerView.isShown=true
-hasLyric=false
+```xml
+<meta-data
+    android:name="io.github.andrealtb.lockscreenlyrics.OPLUS_MEDIA_HISTORY"
+    android:value="true" />
 ```
 
-It holds a 15-second `SCREEN_BRIGHT_WAKE_LOCK` lease only when all of these are true:
+该声明不会替播放器实现 `MediaSession`、媒体按键接收、后台服务启动或播放队列恢复。
 
-- The current package is either a built-in compatibility adapter or the active provider of a valid `lyricInfo` payload.
-- OPlus lyric UI mode is active.
-- Playback is playing.
-- There is lyric evidence from a recently visible official lyric view, with only a short grace window from fresh lyric metadata.
-- The screen is interactive and the keyguard is still showing.
+### 安装与升级
 
-While active, the module renews the wake-lock lease and pulses `PowerManager.userActivity(...)` about every 8 seconds so the system treats the lock-screen lyric view as user-visible activity. The wake lock is released on screen off, true keyguard dismissal, playback stop, missing visible lyric evidence, unsupported package, or any condition change. `ACTION_USER_PRESENT` is followed by a short keyguard recheck so face unlock can keep the lock-screen lyric UI awake when the keyguard remains visible.
+1. 从 Releases 下载 APK 并安装。
+2. 在 LSPosed 中启用模块，并确认推荐作用域包含 `system`、`com.android.systemui` 和需要进程内适配的播放器。
+3. 重启设备，使 SystemUI、system_server 和播放器进程中的 Hook 完整加载。
 
-Self-integrating players are recognized from the current media session and do not need to be added to `scope.list` or `PLAYER_ADAPTERS`. If OPlus changes the `PluginSeedling--Template` log format for a device/ROM, the keep-awake detection may need a small SystemUI-side update.
+源码、完整接入协议和问题反馈：
 
-## Player-provided lyricInfo
+- [源码仓库](https://github.com/Andrea-lyz/ColorOS-Live-Lyrics-Bridge)
+- [播放器接入协议](https://github.com/Andrea-lyz/ColorOS-Live-Lyrics-Bridge/blob/main/docs/PLAYER_INTEGRATION.zh-CN.md)
+- [Issues](https://github.com/Andrea-lyz/ColorOS-Live-Lyrics-Bridge/issues)
 
-This is the preferred integration for players that already own timed lyrics. Publish a valid `lyricInfo` JSON string in the active media session; the module dynamically binds that session in SystemUI. A timed `lyric` field enables native line-level lyrics, while optional `rawLyric` enables this module's word-level renderer.
+## English
 
-Known self-integrating players:
+Bridges timed lyrics from supported music players into the native ColorOS/OPlus lock-screen lyric UI, with word-level highlighting, translation controls, media-card integration, and playback recovery.
 
-- [Halcyon](https://github.com/Kifranei/Halcyon) — `lyricInfo` integration completed.
+### Highlights
 
-See the [player integration contract](docs/PLAYER_INTEGRATION.md). No module APK dependency, package-name registration, or LSPosed player scope is required.
+- Built-in compatibility adapters for Salt Player and ConePlayer.
+- Public `MediaMetadata["lyricInfo"]` protocol for self-integrating players without an APK dependency.
+- Line-timed LRC, word-timed `rawLyric`, translation detection, and stable repeated-line matching.
+- A generic lyric transaction layer prevents stale asynchronous callbacks from binding across tracks, including sequences that contain instrumentals or no-lyric tracks.
+- Long Japanese and Chinese lyric lines wrap at Unicode character boundaries instead of being reduced to tiny text.
+- Preserves the player's original media-action semantics and exposes translation only through OPlus Rule0, preventing previous/play-pause/next slot corruption.
+- Restores Salt Player playback from the ColorOS history media card after the app has fully stopped.
+- Restores ConePlayer lyrics from selected audio-track metadata during background playback resumption.
+- Automatically accepts built-in adapters into OPlus media history; external players may opt in through manifest metadata.
 
-## Optional QQ Music Provider
+### Recommended Scope
 
-The v2.0.0 release bundle includes two APKs:
+The repository [`SCOPE`](SCOPE) follows the required JSON-array format:
 
-```text
-ColorOS-Live-Lyrics-Bridge-<tag>.apk
-LyricProvider-QQMusic-<tag>.apk
+```json
+["system", "com.salt.music", "ink.trantor.coneplayer", "ink.trantor.coneplayer.gp", "com.android.systemui"]
 ```
 
-`LyricProvider-QQMusic` is not part of this module's static scope. Install it separately and enable that provider module for:
+| Scope | Purpose |
+| --- | --- |
+| `system` | Extends OPlus media-history decisions in system_server. |
+| `com.salt.music` | Salt Player lyric capture and background playback recovery. |
+| `ink.trantor.coneplayer` | ConePlayer standard-package lyric adapter. |
+| `ink.trantor.coneplayer.gp` | ConePlayer Google Play-package lyric adapter. |
+| `com.android.systemui` | Lock-screen rendering, translation action, media actions, and screen-timeout handling. |
 
-```text
-com.tencent.qqmusic
+External players that only publish the public `lyricInfo` payload usually do not need player-process scope. To opt into OPlus media history, an external player may declare:
+
+```xml
+<meta-data
+    android:name="io.github.andrealtb.lockscreenlyrics.OPLUS_MEDIA_HISTORY"
+    android:value="true" />
 ```
 
-Then restart QQ Music and SystemUI. The provider hooks QQ Music, keeps compatibility with Lyricon/词幕, and sends full lyric documents to ColorOS Live Lyrics Bridge, including word timing and translations when QQ Music exposes them.
+This declaration does not replace the player's own `MediaSession`, media-button receiver, playback service, or queue-restoration implementation.
 
-## Compatibility Adapters
+### Installation
 
-Compatibility adapters hook legacy players whose native metadata does not expose complete lyric timing through the `lyricInfo` contract.
+1. Download and install the APK from Releases.
+2. Enable the module in LSPosed and confirm that `system`, `com.android.systemui`, and the required built-in player scopes are selected.
+3. Reboot the device so the SystemUI, system_server, and player-process hooks are loaded.
 
-Built-in compatibility adapters are:
+Source, integration documentation, and support:
 
-```java
-new SaltPlayerAdapter()
-new ConePlayerAdapter("ink.trantor.coneplayer")
-new ConePlayerAdapter("ink.trantor.coneplayer.gp")
-```
-
-The Salt adapter has been verified against Salt Player 12.0.0 official and alpha07 builds. The ConePlayer adapter has been verified across versions 1.1.3 through 1.1.5 for the formal package, with Google Play package scope included.
-
-Prefer the player-provided `lyricInfo` contract for new players. Add a `PlayerAdapter` only for compatibility cases where the player cannot publish `lyricInfo` itself.
-
-To add another compatibility adapter:
-
-1. Add the package name to `src/main/resources/META-INF/xposed/scope.list`.
-2. Implement a new `PlayerAdapter` next to `SaltPlayerAdapter`.
-3. Capture that player's real timed lyric source and call `module.cacheTimedLyric(source, rawLyric)`.
-4. Add the adapter to `PLAYER_ADAPTERS`.
-5. Keep both `system` and `com.android.systemui` in `scope.list`; they are required for OPlus media-history integration and SystemUI-side lock-screen behavior.
-
-If a player outside the built-in adapter scope already writes a valid OPlus `lyricInfo` metadata field by itself, a source hook is normally unnecessary. For a built-in adapter package, a line-only payload is a fallback; captured `rawLyric` replaces it once the adapter has data for the current track.
-
-## Why API 102
-
-The local `../LSP_api` folder is libxposed API `102.0.0`. This project follows its current module layout:
-
-- Entry class extends `io.github.libxposed.api.XposedModule`
-- Entry list: `src/main/resources/META-INF/xposed/java_init.list`
-- Module config: `src/main/resources/META-INF/xposed/module.prop`
-- Static scope: `src/main/resources/META-INF/xposed/scope.list`
-- LSPosed repository metadata: `.github/lsposed/`
-- Hook API: `hook(method).setId(...).setExceptionMode(...).intercept(...)`
-
-`libxposed-api-stubs` is compile-only and is not packaged into the APK. It exists so the project can compile without downloading `io.github.libxposed:api:102.0.0`; LSPosed provides the real API classes at runtime.
-
-## Build
-
-```powershell
-.\scripts\gradle-local.cmd testDebugUnitTest assembleDebug
-```
-
-APK output:
-
-```text
-.gradle-local-build\app\outputs\apk\debug\app-debug.apk
-```
-
-JDK 21 is required to compile the Lyrics Core dependency. The helper discovers it from `SALT_LYRIC_JAVA_HOME`, `JAVA_HOME`, or common local JDK locations, and maps the repository to a temporary ASCII drive so Gradle works reliably when the checkout path contains non-ASCII characters. The app itself still targets Java 17 bytecode for Android compatibility.
-
-## GitHub Actions
-
-- `Build Debug APK`: runs on pushes to `main` and pull requests when project source or build files change. The generated debug APK is uploaded as a workflow artifact.
-- `Release APK Bundle`: runs after pushing a tag such as `v2.0.0`, or from manual dispatch. It builds the signed Bridge APK, checks out `Andrea-lyz/LyricProvider`, builds the signed `:qq-music` APK, publishes both APKs to the source release, and mirrors both APKs to the LSPosed repository release with a `versionCode-versionName` tag such as `100-2.0.0`.
-
-The release workflow expects these repository secrets:
-
-- `SIGNING_KEY`: base64-encoded keystore file content.
-- `KEY_STORE_PASSWORD`: keystore password.
-- `KEY_ALIAS`: signing key alias.
-- `KEY_PASSWORD`: signing key password.
-- `LSP_REPO_TOKEN`: PAT with repository-content and release write access to `Xposed-Modules-Repo/io.github.andrealtb.lockscreenlyrics`.
-- `LYRIC_PROVIDER_TOKEN`: optional PAT for checking out `Andrea-lyz/LyricProvider` when that repository is private.
-
-Release assets are published as `ColorOS-Live-Lyrics-Bridge-<tag>.apk` and `LyricProvider-QQMusic-<tag>.apk`.
-
-Install and test with a built-in adapter:
-
-```powershell
-adb install -r .gradle-local-build\app\outputs\apk\debug\app-debug.apk
-adb shell am force-stop com.salt.music
-# Or: adb shell am force-stop ink.trantor.coneplayer
-```
-
-Enable the module in LSPosed for the target player package, `system`, and System UI, then restart the target player and System UI. Reboot only after changing scopes or when validating the `system`-side media-history capability. Restart the player, play a song, then lock the screen.
-
-Useful logs:
-
-```powershell
-adb logcat -v time -s LockscreenLyrics
-adb logcat -v time | Select-String -Pattern "LockscreenLyrics|OplusMediaDataManagerEx|loadLyricInBg|Failed to parse lyric data|LyricsRecyclerView|hasLyric"
-```
-
-Expected module log:
-
-```text
-LockscreenLyrics: Hooked MediaSession#setMetadata
-LockscreenLyrics: Hooked Salt Player lyric result constructors via DexKit: result=..., source=..., scroll=..., count=2
-LockscreenLyrics: Hooked ConePlayer lyric parser via DexKit: ...
-LockscreenLyrics: Hooked SystemUI official lyric TextView draw hooks
-LockscreenLyrics: Registered SystemUI screen timeout receiver
-LockscreenLyrics: Accepted lyric transaction from EMBEDDED, rawChars=..., oplusChars=..., identity=..., association=...
-LockscreenLyrics: Injected real LRC_FILE lyricInfo for title=...
-LockscreenLyrics: Cached SystemUI word lyric model, lines=...
-LockscreenLyrics: Lockscreen lyric UI keep-awake ON
-LockscreenLyrics: Acquired bright screen timeout wake lock lease=15000ms
-LockscreenLyrics: Pulsed screen timeout user activity without changing lights
-LockscreenLyrics: Hooked LyricsRecyclerView#setCurrentLyric, methods=...
-LockscreenLyrics: LyricsRecyclerView current index=...
-LockscreenLyrics: Seedling playback state=3, playing=true, storedPosition=..., computedPosition=..., speed=...
-LockscreenLyrics: Custom-drew official lyric TextView at position=..., playing=true, focused=true, line=...
-LockscreenLyrics: Refreshed active lyric renderer at position=..., line=...
-```
-
-If you only see `Skip lyricInfo injection because no fresh real lyric is cached`, the adapter has not captured a timed LRC result in the current process yet, or the current song only has untimed lyrics.
-
-## License and acknowledgements
-
-Copyright 2026 Andrea-lyz. This project is released under the [Apache License 2.0](LICENSE).
-
-This project uses [Accompanist Lyrics Core](https://github.com/6xingyv/accompanist-lyrics-core) `0.4.5` (`com.mocharealm.accompanist:lyrics-core-jvm`), maintained by [6xingyv](https://github.com/6xingyv), for timed-lyric parsing. Accompanist Lyrics Core is also distributed under the [Apache License 2.0](https://github.com/6xingyv/accompanist-lyrics-core/blob/main/LICENSE).
-
-The optional QQ Music provider is based on the LyricProvider ecosystem by [tomakino/LyricProvider](https://github.com/tomakino/LyricProvider). Thanks to tomakino and LyricProvider contributors for the provider architecture and QQ Music lyric work this integration builds on.
-
-Android, ColorOS, OPlus, LSPosed, Salt Player, ConePlayer, and other product names are trademarks of their respective owners. This project is not affiliated with or endorsed by those owners.
+- [Source repository](https://github.com/Andrea-lyz/ColorOS-Live-Lyrics-Bridge)
+- [Player integration protocol](https://github.com/Andrea-lyz/ColorOS-Live-Lyrics-Bridge/blob/main/docs/PLAYER_INTEGRATION.md)
+- [Issues](https://github.com/Andrea-lyz/ColorOS-Live-Lyrics-Bridge/issues)
