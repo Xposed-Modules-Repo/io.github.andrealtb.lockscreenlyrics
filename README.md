@@ -1,5 +1,9 @@
 # ColorOS Live Lyrics Bridge
 
+## Latest release
+
+v2.5.0 focuses on robust lyric parsing and lock-screen rendering stability. It improves same-timestamp lane classification for main lyrics, translations, romanization, source variants, and credit lines; fixes enhanced-LRC cases where translations replaced the main lyric; downgrades suspicious word timing to line timing to avoid split bilingual rows; removes lyric translation provider credit lines; and adds lyric UI controls for default style, scroll scaling, and inactive-line blur.
+
 ## 简体中文
 
 将受支持音乐播放器的时间轴歌词桥接到 ColorOS/OPlus 原生锁屏歌词界面，并补充逐字高亮、翻译切换、媒体卡片和后台恢复能力。
