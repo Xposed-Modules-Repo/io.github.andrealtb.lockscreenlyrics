@@ -10,14 +10,13 @@
 
 它不是悬浮窗：歌词仍由系统原生界面显示，模块负责补充完整时间轴、逐字高亮、翻译和外观设置。
 
-### v3.4.0 更新了什么
+### v3.4.1 更新了什么
 
-- 新增 **LX Music** Provider，支持 ToSide 与 Walnut 两个 LX Music 变体，并可传递完整时间轴和可用的翻译歌词。
-- Bridge 与全部 8 个 Provider 统一升级到 v4 歌词传递链路，改善切歌、后台恢复和拖动进度时的歌词稳定性；播放器提供翻译时，锁屏翻译按钮保持可用。
-- 修复 QQ 音乐 QRC 原文与翻译时间戳偏差导致的翻译行缺失；网易云音乐 Provider 兼容历史 9.0.40 的 `:play` 播放进程、荣耀版及特殊 APK。
-- 修复酷狗 Lite / 酷狗概念版部分逐字歌词的渲染错位和空白行，并优化逐字高亮扫光和已播放文字过渡。
-- Bridge 主模块新增专属应用图标；歌词开头清理也能更完整地保存规则与逐曲“第一句正式歌词”边界。
-- **请将 Bridge 与已安装的所有 LyricProvider 一起更新。** Release 提供 `LyricProvider-v3.4.0.zip` 合集。
+- 修复播放器翻译设置把已安装 LyricProvider 误判为“未安装”的问题；Android 11 及以上现在可正确识别全部 8 个 Provider。
+- 补全英文制作人员信息的开头清理，清理后会收紧歌词行；同时修正官方歌词列表含插入行时的行位映射，避免歌词错位或空白。
+- 网易云、QQ、Spotify 与汽水 Provider 恢复与词幕并用时的正常歌曲提交；酷狗修复同曲不同标题版本切歌串歌、暂无歌词与封面被覆盖的问题。
+- LX Music 改进进程重启后的歌词代次，并加入低频、脱敏的 LSPosed 诊断日志，便于排查少数切歌异常。
+- **请将 Bridge 与正在使用的 LyricProvider 一起更新。** Release 提供 `LyricProvider-v3.4.1.zip` 合集。
 
 ### 主要功能
 
@@ -82,14 +81,13 @@ Bring lyrics from more music apps to the native ColorOS / OPlus lock-screen lyri
 
 This is not a floating overlay. The system still owns the lyric UI; the module adds full timelines, word-by-word highlighting, translations, and appearance controls.
 
-### What's new in v3.4.0
+### What's new in v3.4.1
 
-- Adds the **LX Music** Provider, supporting both ToSide and Walnut variants with full lyric timelines and translations when supplied by the player.
-- Moves the Bridge and all eight Providers to the v4 lyric-delivery path for more stable track changes, background recovery, and seeking; the lock-screen translation button remains available when the player supplies translations.
-- Fixes missing QQ Music QRC translation lines when original and translated timestamps differ; the NetEase Provider now also supports the historical 9.0.40 `:play` process, the Honor edition, and special APK variants.
-- Fixes misplaced or blank word-timed rows in KuGou Lite / KuGou Concept and refines the word-progress sweep and played-text transition.
-- Adds a dedicated Bridge app icon and improves preservation of lyric-opening cleanup rules and per-song first-lyric boundaries.
-- **Update the Bridge and every installed LyricProvider together.** The release includes the `LyricProvider-v3.4.0.zip` bundle.
+- Fixes installed LyricProviders being incorrectly shown as unavailable in player translation settings; all eight Providers are now visible on Android 11 and later.
+- Cleans English production credits at the lyric opening and compacts the remaining rows; also fixes slot mapping when the stock lyric list has interleaved rows, preventing misplaced or blank lyrics.
+- Restores original Lyricon song delivery alongside the Bridge for NetEase, QQ Music, Spotify, and QiShui; KuGou fixes cross-track state, missing lyrics, and cover-art replacement between alternate-title releases.
+- LX Music improves lyric generations after a player-process restart and adds low-frequency, privacy-preserving LSPosed diagnostics for rare track-change failures.
+- **Update the Bridge and the LyricProviders you use together.** The release includes the `LyricProvider-v3.4.1.zip` bundle.
 
 ### Highlights
 
