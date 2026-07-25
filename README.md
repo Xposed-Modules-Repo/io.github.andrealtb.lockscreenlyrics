@@ -10,13 +10,13 @@
 
 它不是悬浮窗：歌词仍由系统原生界面显示，模块负责补充完整时间轴、逐字高亮、翻译和外观设置。
 
-### v3.4.1 更新了什么
+### v3.5.0 更新了什么
 
-- 修复播放器翻译设置把已安装 LyricProvider 误判为“未安装”的问题；Android 11 及以上现在可正确识别全部 8 个 Provider。
-- 补全英文制作人员信息的开头清理，清理后会收紧歌词行；同时修正官方歌词列表含插入行时的行位映射，避免歌词错位或空白。
-- 网易云、QQ、Spotify 与汽水 Provider 恢复与词幕并用时的正常歌曲提交；酷狗修复同曲不同标题版本切歌串歌、暂无歌词与封面被覆盖的问题。
-- LX Music 改进进程重启后的歌词代次，并加入低频、脱敏的 LSPosed 诊断日志，便于排查少数切歌异常。
-- **请将 Bridge 与正在使用的 LyricProvider 一起更新。** Release 提供 `LyricProvider-v3.4.1.zip` 合集。
+- 把 v4 外部歌词协议补到可在长歌词场景稳定运行：Bridge 与 Provider 各自新增并对齐了大小限制常量（`MAX_LYRIC_FIELD_CHARS = 1,500,000`、`MAX_TOTAL_LYRIC_CHARS = 3,000,000`、`MAX_METADATA_FIELD_CHARS = 16,384`、`MAX_PARCEL_BYTES = 512 KiB`），Provider 侧 `SystemUiBroadcastSender` 新增 `submitWithLyricLineFallback`，被拒收时会按字节预算对中间歌词行做有界截短并重试一次；`LyricInfoContract` 现在接受空 `lyric` + 含时间戳 `rawLyric` 的 payload，纯逐字歌词能进入完整流水线。
+- 把 Bridge 主模块的逐字进度、扫光、首句清理与时序微调逻辑从 `LockscreenLyricsModule` 拆到独立的 `render/` 子包与 `LyricTimingTuningConstants`，便于按层迭代；AOD 首次 attach、prime、槽高、官方行缩放与低刷新切换路径继续沿用 v3.3.0 起的已验证基线。
+- 收紧 `BridgePayloadGate` 去重窗口：单 key 改为多键 LRU，默认保留最近 8 条 30 秒窗口内的 key，避免跨曲目共用同一去重 slot。
+- 酷狗音乐 Provider 移除 `KuGouOriginalMediaMetadataPolicy`，原职责并入 `KuGouOriginalLyricCandidatePolicy`：恢复真实专辑封面，修复同曲不同标题版本互相切换时偶发的"暂无歌词"或歌曲信息串用。
+- **请将 Bridge 与正在使用的 LyricProvider 一起更新。** Release 提供 `LyricProvider-v3.5.0.zip` 合集，并附 8 个独立 Provider APK；网易云音乐 1.1.6、QQ 音乐 1.1.6、Apple Music 1.1.4、Spotify 1.1.6、汽水音乐 1.2.6、酷狗音乐 1.1.9，Poweramp 与 LX Music 本次不需单独升级。
 
 ### 主要功能
 
@@ -81,13 +81,13 @@ Bring lyrics from more music apps to the native ColorOS / OPlus lock-screen lyri
 
 This is not a floating overlay. The system still owns the lyric UI; the module adds full timelines, word-by-word highlighting, translations, and appearance controls.
 
-### What's new in v3.4.1
+### What's new in v3.5.0
 
-- Fixes installed LyricProviders being incorrectly shown as unavailable in player translation settings; all eight Providers are now visible on Android 11 and later.
-- Cleans English production credits at the lyric opening and compacts the remaining rows; also fixes slot mapping when the stock lyric list has interleaved rows, preventing misplaced or blank lyrics.
-- Restores original Lyricon song delivery alongside the Bridge for NetEase, QQ Music, Spotify, and QiShui; KuGou fixes cross-track state, missing lyrics, and cover-art replacement between alternate-title releases.
-- LX Music improves lyric generations after a player-process restart and adds low-frequency, privacy-preserving LSPosed diagnostics for rare track-change failures.
-- **Update the Bridge and the LyricProviders you use together.** The release includes the `LyricProvider-v3.4.1.zip` bundle.
+- Completes the v4 external-lyric protocol so long lyrics stay stable end to end: Bridge and Provider now share mirrored size limits (`MAX_LYRIC_FIELD_CHARS = 1,500,000`, `MAX_TOTAL_LYRIC_CHARS = 3,000,000`, `MAX_METADATA_FIELD_CHARS = 16,384`, `MAX_PARCEL_BYTES = 512 KiB`); Provider's `SystemUiBroadcastSender` gains `submitWithLyricLineFallback`, which retries once with a byte-budgeted middle-line truncation when SystemUI rejects the bundle; `LyricInfoContract` now accepts payloads where `lyric` is empty but `rawLyric` carries timed tags so word-only tracks enter the full pipeline.
+- Splits Bridge's word progress, sweep, opening cleanup, and timing adjustments out of `LockscreenLyricsModule` into a dedicated `render/` package and `LyricTimingTuningConstants`, while keeping the AOD attach, prime, slot height, official row scale, and low-refresh switching paths on the v3.3.0 validated baseline.
+- Tightens the `BridgePayloadGate` dedupe window: a single key becomes a multi-key LRU that retains the last 8 keys seen within a 30 s window, preventing cross-track collisions on the same dedupe slot.
+- KuGou Provider drops `KuGouOriginalMediaMetadataPolicy` and folds its responsibility into `KuGouOriginalLyricCandidatePolicy`, restoring the real album cover and fixing the occasional "no lyrics" / mixed-up metadata between alternate-title releases of the same track.
+- **Update the Bridge and the LyricProviders you use together.** The release ships `LyricProvider-v3.5.0.zip` alongside the eight Provider APKs; 163 Music 1.1.6, QQ Music 1.1.6, Apple Music 1.1.4, Spotify 1.1.6, QiShui Music 1.2.6, KuGou Music 1.1.9. Poweramp and LX Music do not need a separate update.
 
 ### Highlights
 
