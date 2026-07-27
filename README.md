@@ -10,13 +10,13 @@
 
 它不是悬浮窗：歌词仍由系统原生界面显示，模块负责补充完整时间轴、逐字高亮、翻译和外观设置。
 
-### v3.5.0 更新了什么
+### v3.5.1 更新了什么
 
-- 把 v4 外部歌词协议补到可在长歌词场景稳定运行：Bridge 与 Provider 各自新增并对齐了大小限制常量（`MAX_LYRIC_FIELD_CHARS = 1,500,000`、`MAX_TOTAL_LYRIC_CHARS = 3,000,000`、`MAX_METADATA_FIELD_CHARS = 16,384`、`MAX_PARCEL_BYTES = 512 KiB`），Provider 侧 `SystemUiBroadcastSender` 新增 `submitWithLyricLineFallback`，被拒收时会按字节预算对中间歌词行做有界截短并重试一次；`LyricInfoContract` 现在接受空 `lyric` + 含时间戳 `rawLyric` 的 payload，纯逐字歌词能进入完整流水线。
-- 把 Bridge 主模块的逐字进度、扫光、首句清理与时序微调逻辑从 `LockscreenLyricsModule` 拆到独立的 `render/` 子包与 `LyricTimingTuningConstants`，便于按层迭代；AOD 首次 attach、prime、槽高、官方行缩放与低刷新切换路径继续沿用 v3.3.0 起的已验证基线。
-- 收紧 `BridgePayloadGate` 去重窗口：单 key 改为多键 LRU，默认保留最近 8 条 30 秒窗口内的 key，避免跨曲目共用同一去重 slot。
-- 酷狗音乐 Provider 移除 `KuGouOriginalMediaMetadataPolicy`，原职责并入 `KuGouOriginalLyricCandidatePolicy`：恢复真实专辑封面，修复同曲不同标题版本互相切换时偶发的"暂无歌词"或歌曲信息串用。
-- **请将 Bridge 与正在使用的 LyricProvider 一起更新。** Release 提供 `LyricProvider-v3.5.0.zip` 合集，并附 8 个独立 Provider APK；网易云音乐 1.1.6、QQ 音乐 1.1.6、Apple Music 1.1.4、Spotify 1.1.6、汽水音乐 1.2.6、酷狗音乐 1.1.9，Poweramp 与 LX Music 本次不需单独升级。
+- 本次只修复网易云音乐 163 Music Provider，Bridge 本体的协议、渲染、AOD 与 Provider 准入行为保持 v3.5.0 不变。
+- 修复网易云音乐 9.0.40 LSPatch 包中词幕不显示双排翻译的问题：Provider 会在原始 Application ClassLoader 可用后重新解析 `showLyricSetting` 偏好访问器，再按网易云当前翻译设置注册词幕。
+- 真机确认网易云词幕恢复双排翻译，Bridge 原有歌词检测与锁屏显示保持正常。
+- 网易云音乐 Provider 升级到 1.1.7；其他 7 个 Provider 本次没有源码或内部版本变更。
+- 网易云用户只需更新 `LyricProvider-163Music-v3.5.1.apk`。Release 仍提供全部 Provider APK 与 `LyricProvider-v3.5.1.zip` 合集。
 
 ### 主要功能
 
@@ -81,13 +81,13 @@ Bring lyrics from more music apps to the native ColorOS / OPlus lock-screen lyri
 
 This is not a floating overlay. The system still owns the lyric UI; the module adds full timelines, word-by-word highlighting, translations, and appearance controls.
 
-### What's new in v3.5.0
+### What's new in v3.5.1
 
-- Completes the v4 external-lyric protocol so long lyrics stay stable end to end: Bridge and Provider now share mirrored size limits (`MAX_LYRIC_FIELD_CHARS = 1,500,000`, `MAX_TOTAL_LYRIC_CHARS = 3,000,000`, `MAX_METADATA_FIELD_CHARS = 16,384`, `MAX_PARCEL_BYTES = 512 KiB`); Provider's `SystemUiBroadcastSender` gains `submitWithLyricLineFallback`, which retries once with a byte-budgeted middle-line truncation when SystemUI rejects the bundle; `LyricInfoContract` now accepts payloads where `lyric` is empty but `rawLyric` carries timed tags so word-only tracks enter the full pipeline.
-- Splits Bridge's word progress, sweep, opening cleanup, and timing adjustments out of `LockscreenLyricsModule` into a dedicated `render/` package and `LyricTimingTuningConstants`, while keeping the AOD attach, prime, slot height, official row scale, and low-refresh switching paths on the v3.3.0 validated baseline.
-- Tightens the `BridgePayloadGate` dedupe window: a single key becomes a multi-key LRU that retains the last 8 keys seen within a 30 s window, preventing cross-track collisions on the same dedupe slot.
-- KuGou Provider drops `KuGouOriginalMediaMetadataPolicy` and folds its responsibility into `KuGouOriginalLyricCandidatePolicy`, restoring the real album cover and fixing the occasional "no lyrics" / mixed-up metadata between alternate-title releases of the same track.
-- **Update the Bridge and the LyricProviders you use together.** The release ships `LyricProvider-v3.5.0.zip` alongside the eight Provider APKs; 163 Music 1.1.6, QQ Music 1.1.6, Apple Music 1.1.4, Spotify 1.1.6, QiShui Music 1.2.6, KuGou Music 1.1.9. Poweramp and LX Music do not need a separate update.
+- This release only changes the NetEase 163 Music Provider. Bridge protocol, rendering, AOD behavior, and Provider admission remain unchanged from v3.5.0.
+- Fixes missing two-line translations in the NetEase 9.0.40 LSPatch package: the Provider now resolves the `showLyricSetting` preference accessor again after the original Application ClassLoader becomes available, then registers Lyricon with the active NetEase translation mode.
+- Device testing confirms that Lyricon translations are restored while the existing Bridge lyric detection and lock-screen display remain normal.
+- The 163 Music Provider is updated to 1.1.7. The other seven Providers have no source or internal-version changes in this release.
+- NetEase users only need to update `LyricProvider-163Music-v3.5.1.apk`. The release still includes every Provider APK and the complete `LyricProvider-v3.5.1.zip` bundle.
 
 ### Highlights
 
