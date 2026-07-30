@@ -12,7 +12,11 @@
 
 ### v3.5.2 更新了什么
 
-- 适配 Salt Player 最新 12.2.0-alpha02 版本。
+- 适配 Salt Player 最新 12.2.0-alpha02 版本，恢复 Bridge 内置歌词捕获；本次不需要安装额外 Provider。
+- Salt Player 12.2.0-alpha02 将混淆歌词模型从 `androidx.obf` 迁移到了 `androidx.media3`，旧版 Bridge 因 DexKit 只搜索原包根而无法发现最终歌词发布链路。
+- Bridge 现在同时搜索新旧两个包根，在支持 12.2.0-alpha02 的同时继续兼容原先已支持的旧版 Salt Player。
+- 适配测试、Bridge 全量单元测试与正式发布构建均已通过；本次不修改外部歌词协议、SystemUI Renderer 或 AOD 行为。
+- Salt Player 用户只需更新 `ColorOS-Live-Lyrics-Bridge-v3.5.2.apk`。8 个 Provider 本次没有功能源码或内部版本变更，Release 仍提供全部 Provider APK 与 `LyricProvider-v3.5.2.zip` 合集。
 
 ### 主要功能
 
@@ -79,7 +83,11 @@ This is not a floating overlay. The system still owns the lyric UI; the module a
 
 ### What's new in v3.5.2
 
-- Adds support for the latest Salt Player 12.2.0-alpha02 release.
+- Adds support for the latest Salt Player 12.2.0-alpha02 release and restores the Bridge's built-in lyric capture; no additional Provider is required.
+- Salt Player 12.2.0-alpha02 relocates its obfuscated lyric model from `androidx.obf` to `androidx.media3`, so the previous DexKit query could no longer discover the final lyric publication path.
+- The Bridge now searches both package roots, supporting 12.2.0-alpha02 while retaining compatibility with previously supported Salt Player versions.
+- Compatibility tests, the complete Bridge unit-test suite, and the signed release build passed. External-lyric protocol, SystemUI rendering, and AOD behavior are unchanged.
+- Salt Player users only need `ColorOS-Live-Lyrics-Bridge-v3.5.2.apk`. The eight Providers have no functional or internal-version changes; all Provider APKs and `LyricProvider-v3.5.2.zip` remain available in the release.
 
 ### Highlights
 
