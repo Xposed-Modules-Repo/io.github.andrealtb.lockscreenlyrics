@@ -10,13 +10,9 @@
 
 它不是悬浮窗：歌词仍由系统原生界面显示，模块负责补充完整时间轴、逐字高亮、翻译和外观设置。
 
-### v3.5.1 更新了什么
+### v3.5.2 更新了什么
 
-- 本次只修复网易云音乐 163 Music Provider，Bridge 本体的协议、渲染、AOD 与 Provider 准入行为保持 v3.5.0 不变。
-- 修复网易云音乐 9.0.40 LSPatch 包中词幕不显示双排翻译的问题：Provider 会在原始 Application ClassLoader 可用后重新解析 `showLyricSetting` 偏好访问器，再按网易云当前翻译设置注册词幕。
-- 真机确认网易云词幕恢复双排翻译，Bridge 原有歌词检测与锁屏显示保持正常。
-- 网易云音乐 Provider 升级到 1.1.7；其他 7 个 Provider 本次没有源码或内部版本变更。
-- 网易云用户只需更新 `LyricProvider-163Music-v3.5.1.apk`。Release 仍提供全部 Provider APK 与 `LyricProvider-v3.5.1.zip` 合集。
+- 适配 Salt Player 最新 12.2.0-alpha02 版本。
 
 ### 主要功能
 
@@ -81,13 +77,9 @@ Bring lyrics from more music apps to the native ColorOS / OPlus lock-screen lyri
 
 This is not a floating overlay. The system still owns the lyric UI; the module adds full timelines, word-by-word highlighting, translations, and appearance controls.
 
-### What's new in v3.5.1
+### What's new in v3.5.2
 
-- This release only changes the NetEase 163 Music Provider. Bridge protocol, rendering, AOD behavior, and Provider admission remain unchanged from v3.5.0.
-- Fixes missing two-line translations in the NetEase 9.0.40 LSPatch package: the Provider now resolves the `showLyricSetting` preference accessor again after the original Application ClassLoader becomes available, then registers Lyricon with the active NetEase translation mode.
-- Device testing confirms that Lyricon translations are restored while the existing Bridge lyric detection and lock-screen display remain normal.
-- The 163 Music Provider is updated to 1.1.7. The other seven Providers have no source or internal-version changes in this release.
-- NetEase users only need to update `LyricProvider-163Music-v3.5.1.apk`. The release still includes every Provider APK and the complete `LyricProvider-v3.5.1.zip` bundle.
+- Adds support for the latest Salt Player 12.2.0-alpha02 release.
 
 ### Highlights
 
