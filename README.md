@@ -44,7 +44,7 @@
 | --- | --- | --- |
 | Salt Player | 无 | Bridge 内置适配；逐字与翻译取决于播放器数据 |
 | ConePlayer / 光锥音乐 | 无 | Bridge 内置适配；正式版与 Google Play 版 |
-| [Metrolist](https://github.com/metrolistgroup/metrolist) | `LyricProvider-Metrolist` | 按播放器设置的供应商顺序搜索；BetterLyrics / KuGou 支持逐字歌词，LrcLib 可回退逐行歌词；不支持翻译歌词 |
+| [Metrolist](https://github.com/metrolistgroup/metrolist) | `LyricProvider-Metrolist` | 按播放器设置的供应商顺序搜索；BetterLyrics / KuGou 支持逐字歌词，LrcLib 可回退逐行歌词；不支持翻译歌词，也不支持词幕（Lyricon） |
 | QQ 音乐 | `LyricProvider-QQMusic` | 逐字、翻译 |
 | 网易云音乐 / 荣耀版 | `LyricProvider-163Music` | 逐字、翻译 |
 | Apple Music | `LyricProvider-AppleMusic` | 逐字、翻译；不输出背景人声和对唱分轨 |
@@ -120,7 +120,7 @@ This is not a floating overlay. The system still owns the lyric UI; the module a
 | --- | --- | --- |
 | Salt Player | None | Built into the Bridge; word timing and translations depend on player data |
 | ConePlayer | None | Built into the Bridge; standard and Google Play packages |
-| [Metrolist](https://github.com/metrolistgroup/metrolist) | `LyricProvider-Metrolist` | Follows the configured provider order; BetterLyrics and KuGou support word timing, with LrcLib as a line-timed fallback; translations are not supported |
+| [Metrolist](https://github.com/metrolistgroup/metrolist) | `LyricProvider-Metrolist` | Follows the configured provider order; BetterLyrics and KuGou support word timing, with LrcLib as a line-timed fallback; translations and Lyricon integration are not supported |
 | QQ Music | `LyricProvider-QQMusic` | Word-timed lyrics and translations |
 | NetEase Cloud Music / Honor edition | `LyricProvider-163Music` | Word-timed lyrics and translations |
 | Apple Music | `LyricProvider-AppleMusic` | Word-timed lyrics and translations; background-vocal and duet lanes are excluded |
