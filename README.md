@@ -10,13 +10,15 @@
 
 它不是悬浮窗：歌词仍由系统原生界面显示，模块负责补充完整时间轴、逐字高亮、翻译和外观设置。
 
-### v3.5.2 更新了什么
+### v3.6.0 更新了什么
 
-- 适配 Salt Player 最新 12.2.0-alpha02 版本，恢复 Bridge 内置歌词捕获；本次不需要安装额外 Provider。
-- Salt Player 12.2.0-alpha02 将混淆歌词模型从 `androidx.obf` 迁移到了 `androidx.media3`，旧版 Bridge 因 DexKit 只搜索原包根而无法发现最终歌词发布链路。
-- Bridge 现在同时搜索新旧两个包根，在支持 12.2.0-alpha02 的同时继续兼容原先已支持的旧版 Salt Player。
-- 适配测试、Bridge 全量单元测试与正式发布构建均已通过；本次不修改外部歌词协议、SystemUI Renderer 或 AOD 行为。
-- Salt Player 用户只需更新 `ColorOS-Live-Lyrics-Bridge-v3.5.2.apk`。8 个 Provider 本次没有功能源码或内部版本变更，Release 仍提供全部 Provider APK 与 `LyricProvider-v3.5.2.zip` 合集。
+- 新增 Metrolist 专用 LyricProvider，通过 v4 直达广播把完整歌词时间轴发送给 Bridge；在 LSPosed 中只需为该 Provider 勾选 Metrolist。
+- Provider 会读取 Metrolist 的 `LyricsProviderOrderKey` 和启用状态，按照用户设置依次尝试 BetterLyrics、LrcLib 与 KuGou，并把专辑信息一并用于匹配，避免错误降级到后续歌词源。
+- BetterLyrics TTML 与 KuGou KRC 的逐字时间会保留到锁屏；拉丁单词的相邻音节不会再被错误显示为 `call ing`、`a lone` 等形式。LrcLib 作为逐行歌词回退。
+- 修复部分首次播放或切歌时歌词已经由 Provider 发送并被 Bridge 接收，但系统歌词列表仍为空、必须暂停或继续播放后才刷新的问题。Bridge 现在会在当前曲目校验通过后重放 SystemUI 原生歌词加载事务。
+- Metrolist 的异步搜索绑定曲目 generation，切歌会取消旧任务和正在进行的 HTTP 请求；每个供应商都有独立超时，避免旧歌词晚到覆盖新曲。
+- Bridge 与 Metrolist Provider 单元测试、Debug 构建及 Android 16 实机测试均已通过。既有 SystemUI Renderer、AOD 和其他 8 个 Provider 的功能实现保持不变。
+- Metrolist 用户需同时安装同一 Release 中的 `ColorOS-Live-Lyrics-Bridge-v3.6.0.apk` 与 `LyricProvider-Metrolist-v3.6.0.apk`。Release 提供 9 个 Provider APK 和 `LyricProvider-v3.6.0.zip` 合集。
 
 ### 主要功能
 
@@ -42,6 +44,7 @@
 | --- | --- | --- |
 | Salt Player | 无 | Bridge 内置适配；逐字与翻译取决于播放器数据 |
 | ConePlayer / 光锥音乐 | 无 | Bridge 内置适配；正式版与 Google Play 版 |
+| [Metrolist](https://github.com/metrolistgroup/metrolist) | `LyricProvider-Metrolist` | 按播放器设置的供应商顺序搜索；BetterLyrics / KuGou 支持逐字歌词，LrcLib 可回退逐行歌词；不支持翻译歌词 |
 | QQ 音乐 | `LyricProvider-QQMusic` | 逐字、翻译 |
 | 网易云音乐 / 荣耀版 | `LyricProvider-163Music` | 逐字、翻译 |
 | Apple Music | `LyricProvider-AppleMusic` | 逐字、翻译；不输出背景人声和对唱分轨 |
@@ -50,6 +53,8 @@
 | Spotify | `LyricProvider-Spotify` | 目前仅原文标准歌词，不支持翻译 |
 | 汽水音乐 | `LyricProvider-QiShui` | 逐字、翻译；需做好 Root 隐藏并完成下方设置 |
 | 酷狗音乐 / 概念版 | `LyricProvider-KuGou` | 逐字、翻译 |
+
+[Metrolist](https://github.com/metrolistgroup/metrolist) 是**适用于安卓系统的 YouTube Music 客户端**。由于 Metrolist 本身没有稳定的歌词获取接口，本 Provider 采用与 Metrolist 相同的方式从第三方歌词提供商获取歌词，因此两者获取的歌词可能存在差异。
 
 ### 安装方法
 
@@ -81,13 +86,15 @@ Bring lyrics from more music apps to the native ColorOS / OPlus lock-screen lyri
 
 This is not a floating overlay. The system still owns the lyric UI; the module adds full timelines, word-by-word highlighting, translations, and appearance controls.
 
-### What's new in v3.5.2
+### What's new in v3.6.0
 
-- Adds support for the latest Salt Player 12.2.0-alpha02 release and restores the Bridge's built-in lyric capture; no additional Provider is required.
-- Salt Player 12.2.0-alpha02 relocates its obfuscated lyric model from `androidx.obf` to `androidx.media3`, so the previous DexKit query could no longer discover the final lyric publication path.
-- The Bridge now searches both package roots, supporting 12.2.0-alpha02 while retaining compatibility with previously supported Salt Player versions.
-- Compatibility tests, the complete Bridge unit-test suite, and the signed release build passed. External-lyric protocol, SystemUI rendering, and AOD behavior are unchanged.
-- Salt Player users only need `ColorOS-Live-Lyrics-Bridge-v3.5.2.apk`. The eight Providers have no functional or internal-version changes; all Provider APKs and `LyricProvider-v3.5.2.zip` remain available in the release.
+- Adds a dedicated Metrolist LyricProvider that sends the complete lyric timeline to the Bridge over the direct v4 transport. Its LSPosed scope should contain Metrolist only.
+- The Provider reads Metrolist's `LyricsProviderOrderKey` and enable flags, tries BetterLyrics, LrcLib, and KuGou in the user's configured order, and forwards album metadata for more accurate matching.
+- Word timing from BetterLyrics TTML and KuGou KRC is preserved on the lock screen. Adjacent Latin syllables are merged before enhanced-LRC output, preventing artifacts such as `call ing` and `a lone`; LrcLib remains the line-timed fallback.
+- Fixes cases where lyrics were sent and accepted on first playback or after a track change but the official SystemUI lyric list stayed empty until playback was paused or resumed. The Bridge now safely replays the native SystemUI lyric-load transaction after validating the current track.
+- Metrolist searches are tied to the current track generation. Track changes cancel stale jobs and active HTTP calls, and each provider has an independent timeout so old results cannot arrive after the new track.
+- Bridge and Metrolist Provider unit tests, Debug builds, and Android 16 device tests passed. Existing SystemUI renderer and AOD behavior, plus the functional implementations of the other eight Providers, are unchanged.
+- Metrolist users should install both `ColorOS-Live-Lyrics-Bridge-v3.6.0.apk` and `LyricProvider-Metrolist-v3.6.0.apk` from the same release. The release contains nine Provider APKs and the `LyricProvider-v3.6.0.zip` bundle.
 
 ### Highlights
 
@@ -113,6 +120,7 @@ This is not a floating overlay. The system still owns the lyric UI; the module a
 | --- | --- | --- |
 | Salt Player | None | Built into the Bridge; word timing and translations depend on player data |
 | ConePlayer | None | Built into the Bridge; standard and Google Play packages |
+| [Metrolist](https://github.com/metrolistgroup/metrolist) | `LyricProvider-Metrolist` | Follows the configured provider order; BetterLyrics and KuGou support word timing, with LrcLib as a line-timed fallback; translations are not supported |
 | QQ Music | `LyricProvider-QQMusic` | Word-timed lyrics and translations |
 | NetEase Cloud Music / Honor edition | `LyricProvider-163Music` | Word-timed lyrics and translations |
 | Apple Music | `LyricProvider-AppleMusic` | Word-timed lyrics and translations; background-vocal and duet lanes are excluded |
@@ -121,6 +129,8 @@ This is not a floating overlay. The system still owns the lyric UI; the module a
 | Spotify | `LyricProvider-Spotify` | Standard original lyrics only; no translation support yet |
 | QiShui Music | `LyricProvider-QiShui` | Word-timed and translated lyrics; proper root hiding and the extra step below are required |
 | KuGou Music / Concept | `LyricProvider-KuGou` | Word-timed lyrics and translations |
+
+[Metrolist](https://github.com/metrolistgroup/metrolist) is a **YouTube Music client for Android**. Because Metrolist itself does not provide a stable lyric retrieval interface, this Provider retrieves lyrics from third-party lyric providers in the same way as Metrolist. The lyrics selected by the Provider may therefore differ from those shown inside Metrolist.
 
 ### Installation
 
