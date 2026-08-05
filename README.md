@@ -10,15 +10,15 @@
 
 它不是悬浮窗：歌词仍由系统原生界面显示，模块负责补充完整时间轴、逐字高亮、翻译和外观设置。
 
-### v3.6.0 更新了什么
+### v3.7.0 更新了什么
 
-- 新增 Metrolist 专用 LyricProvider，通过 v4 直达广播把完整歌词时间轴发送给 Bridge；在 LSPosed 中只需为该 Provider 勾选 Metrolist。
-- Provider 会读取 Metrolist 的 `LyricsProviderOrderKey` 和启用状态，按照用户设置依次尝试 BetterLyrics、LrcLib 与 KuGou，并把专辑信息一并用于匹配，避免错误降级到后续歌词源。
-- BetterLyrics TTML 与 KuGou KRC 的逐字时间会保留到锁屏；拉丁单词的相邻音节不会再被错误显示为 `call ing`、`a lone` 等形式。LrcLib 作为逐行歌词回退。
-- 修复部分首次播放或切歌时歌词已经由 Provider 发送并被 Bridge 接收，但系统歌词列表仍为空、必须暂停或继续播放后才刷新的问题。Bridge 现在会在当前曲目校验通过后重放 SystemUI 原生歌词加载事务。
-- Metrolist 的异步搜索绑定曲目 generation，切歌会取消旧任务和正在进行的 HTTP 请求；每个供应商都有独立超时，避免旧歌词晚到覆盖新曲。
-- Bridge 与 Metrolist Provider 单元测试、Debug 构建及 Android 16 实机测试均已通过。既有 SystemUI Renderer、AOD 和其他 8 个 Provider 的功能实现保持不变。
-- Metrolist 用户需同时安装同一 Release 中的 `ColorOS-Live-Lyrics-Bridge-v3.6.0.apk` 与 `LyricProvider-Metrolist-v3.6.0.apk`。Release 提供 9 个 Provider APK 和 `LyricProvider-v3.6.0.zip` 合集。
+- 设置页完成整体 UI 重构：主页与两个二级页面统一为新的卡片分区布局，包含分区图标、实时激活状态、固定底部操作栏、未保存徽标与返回确认，控件全部改用 Material 风格并自绘下拉菜单。
+- 新增迷你锁屏预览：使用真实配置的字号、颜色、光晕、模糊、缩放与对齐效果，滚动时吸顶浮动；预览卡可上滑收纳为标题栏「预览」按钮，点击即可重新展开。
+- 自定义颜色改为 mockup 风格面板：HEX 输入、颜色预览、HSV 取色与输入法避让；颜色面板不会再推动主页面滚动或遮挡键盘。
+- 修正主歌词颜色的语义：普通行与非实时行保持低透明度白色，主歌词颜色只作用于实时行的逐字覆盖与扫光过渡，避免整行染色和过渡区白色断层。
+- 修复 LX Music 歌词覆盖层闪烁与进度错位（移除与 LyricModule 锚点同步冲突的重复回调），以及汽水音乐同曲元数据更新时覆盖层重置闪烁的问题。
+- 设置页与 LX / 汽水音乐修复均已通过单元测试与 Debug 构建；真机视觉验证以本次 Release 安装后的实际锁屏表现为准。
+- 升级时请从同一 Release 安装 `ColorOS-Live-Lyrics-Bridge-v3.7.0.apk` 与对应播放器的 Provider APK。
 
 ### 主要功能
 
@@ -86,15 +86,15 @@ Bring lyrics from more music apps to the native ColorOS / OPlus lock-screen lyri
 
 This is not a floating overlay. The system still owns the lyric UI; the module adds full timelines, word-by-word highlighting, translations, and appearance controls.
 
-### What's new in v3.6.0
+### What's new in v3.7.0
 
-- Adds a dedicated Metrolist LyricProvider that sends the complete lyric timeline to the Bridge over the direct v4 transport. Its LSPosed scope should contain Metrolist only.
-- The Provider reads Metrolist's `LyricsProviderOrderKey` and enable flags, tries BetterLyrics, LrcLib, and KuGou in the user's configured order, and forwards album metadata for more accurate matching.
-- Word timing from BetterLyrics TTML and KuGou KRC is preserved on the lock screen. Adjacent Latin syllables are merged before enhanced-LRC output, preventing artifacts such as `call ing` and `a lone`; LrcLib remains the line-timed fallback.
-- Fixes cases where lyrics were sent and accepted on first playback or after a track change but the official SystemUI lyric list stayed empty until playback was paused or resumed. The Bridge now safely replays the native SystemUI lyric-load transaction after validating the current track.
-- Metrolist searches are tied to the current track generation. Track changes cancel stale jobs and active HTTP calls, and each provider has an independent timeout so old results cannot arrive after the new track.
-- Bridge and Metrolist Provider unit tests, Debug builds, and Android 16 device tests passed. Existing SystemUI renderer and AOD behavior, plus the functional implementations of the other eight Providers, are unchanged.
-- Metrolist users should install both `ColorOS-Live-Lyrics-Bridge-v3.6.0.apk` and `LyricProvider-Metrolist-v3.6.0.apk` from the same release. The release contains nine Provider APKs and the `LyricProvider-v3.6.0.zip` bundle.
+- The settings UI has been fully redesigned: the main page and both sub-pages share new card-based sections, section icons, a live module-status row, a pinned bottom action bar, an unsaved-changes badge and confirmation dialog, Material-style controls, and a custom-drawn dropdown.
+- A new mini lock-screen preview shows real configured font sizes, colors, glow, blur, scale, and alignment, sticking to the top while scrolling. The floating preview can be collapsed into a "Preview" button in the app bar by swiping up and re-expanded by tapping it.
+- Custom colors use a mockup-style anchored panel with HEX input, a color preview, HSV picking, and keyboard-avoidance positioning, so the panel no longer scrolls the page or is hidden by the IME.
+- Primary lyric color semantics are corrected: regular and non-active lines stay low-opacity white, and the primary color is applied only to the word-progress reveal and its feather transition on the active line.
+- Fixes LX Music lyric-overlay flickering and progress mismatch caused by competing Lyricon callbacks, and QiShui Music overlay resets on same-track metadata updates.
+- Settings and Provider fixes pass unit tests and Debug builds; device-level visual verification follows installation of this release.
+- Install `ColorOS-Live-Lyrics-Bridge-v3.7.0.apk` and the matching Provider APK from the same release when upgrading.
 
 ### Highlights
 
