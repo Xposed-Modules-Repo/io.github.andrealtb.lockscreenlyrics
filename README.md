@@ -10,15 +10,12 @@
 
 它不是悬浮窗：歌词仍由系统原生界面显示，模块负责补充完整时间轴、逐字高亮、翻译和外观设置。
 
-### v3.7.0 更新了什么
+### v3.7.1 更新了什么
 
-- 设置页完成整体 UI 重构：主页与两个二级页面统一为新的卡片分区布局，包含分区图标、实时激活状态、固定底部操作栏、未保存徽标与返回确认，控件全部改用 Material 风格并自绘下拉菜单。
-- 新增迷你锁屏预览：使用真实配置的字号、颜色、光晕、模糊、缩放与对齐效果，滚动时吸顶浮动；预览卡可上滑收纳为标题栏「预览」按钮，点击即可重新展开。
-- 自定义颜色改为 mockup 风格面板：HEX 输入、颜色预览、HSV 取色与输入法避让；颜色面板不会再推动主页面滚动或遮挡键盘。
-- 修正主歌词颜色的语义：普通行与非实时行保持低透明度白色，主歌词颜色只作用于实时行的逐字覆盖与扫光过渡，避免整行染色和过渡区白色断层。
-- 修复 LX Music 歌词覆盖层闪烁与进度错位（移除与 LyricModule 锚点同步冲突的重复回调），以及汽水音乐同曲元数据更新时覆盖层重置闪烁的问题。
-- 设置页与 LX / 汽水音乐修复均已通过单元测试与 Debug 构建；真机视觉验证以本次 Release 安装后的实际锁屏表现为准。
-- 升级时请从同一 Release 安装 `ColorOS-Live-Lyrics-Bridge-v3.7.0.apk` 与对应播放器的 Provider APK。
+- 修复 ColorOS 16.0.10.x（如 OPPO X9s Pro）上 SystemUI 歌词 Hook 失效：该版本系统界面版本号仍为 16.99.12，但媒体 RUS 管理器已重构（`getRusWhiteList` 删除、`saveListToSP` 变静态 10 参数、`updatePkgActionsRule` 增至 6 个 Map、白名单改经 `MediaRusConfig` 暴露）。Bridge 的 DexKit 解析升级为双锚点集并兼容新旧方法签名，解析日志新增 `rusVariant`；16.0.9.x 及更早构建行为保持不变。
+- 修复 v3.7.0 回归：普通逐行歌词（无逐字时间戳）的实时行不再以 100% 不透明度高亮。恢复激活行整行高亮，并在"普通逐行歌词进度"开关开启时同样生效；带逐字歌词与 AOD 低帧率填充行为不变。
+- 两项修复均通过单元测试（42 套件 / 412 项）与 Debug 构建；16.0.9.x 与 16.0.10.x 真机验证通过，高亮修复经开发者与反馈用户实测确认。
+- 升级时请从同一 Release 安装 `ColorOS-Live-Lyrics-Bridge-v3.7.1.apk` 与对应播放器的 Provider APK；ColorOS 16.0.10.x 用户本次为必须升级。
 
 ### 主要功能
 
@@ -86,15 +83,12 @@ Bring lyrics from more music apps to the native ColorOS / OPlus lock-screen lyri
 
 This is not a floating overlay. The system still owns the lyric UI; the module adds full timelines, word-by-word highlighting, translations, and appearance controls.
 
-### What's new in v3.7.0
+### What's new in v3.7.1
 
-- The settings UI has been fully redesigned: the main page and both sub-pages share new card-based sections, section icons, a live module-status row, a pinned bottom action bar, an unsaved-changes badge and confirmation dialog, Material-style controls, and a custom-drawn dropdown.
-- A new mini lock-screen preview shows real configured font sizes, colors, glow, blur, scale, and alignment, sticking to the top while scrolling. The floating preview can be collapsed into a "Preview" button in the app bar by swiping up and re-expanded by tapping it.
-- Custom colors use a mockup-style anchored panel with HEX input, a color preview, HSV picking, and keyboard-avoidance positioning, so the panel no longer scrolls the page or is hidden by the IME.
-- Primary lyric color semantics are corrected: regular and non-active lines stay low-opacity white, and the primary color is applied only to the word-progress reveal and its feather transition on the active line.
-- Fixes LX Music lyric-overlay flickering and progress mismatch caused by competing Lyricon callbacks, and QiShui Music overlay resets on same-track metadata updates.
-- Settings and Provider fixes pass unit tests and Debug builds; device-level visual verification follows installation of this release.
-- Install `ColorOS-Live-Lyrics-Bridge-v3.7.0.apk` and the matching Provider APK from the same release when upgrading.
+- Fixes SystemUI lyric-hook failure on ColorOS 16.0.10.x (e.g. OPPO X9s Pro): the SystemUI still reports version 16.99.12, but its media RUS manager was refactored (`getRusWhiteList` removed, `saveListToSP` now a static 10-parameter method, `updatePkgActionsRule` grew to 6 maps, and the whitelist moved into `MediaRusConfig`). DexKit resolution now uses dual anchor sets and accepts both old and new method shapes, and the resolution log gained a `rusVariant` marker; 16.0.9.x and older builds are unchanged.
+- Fixes a v3.7.0 regression where the active line of plain line-timed lyrics (no word timing) lost its full-opacity highlight. The active line is highlighted again in both line-timed progress modes; word-timed reveal and AOD low-frame-rate fill are unchanged.
+- Both fixes pass unit tests (42 suites / 412 tests) and Debug builds, with device verification on 16.0.9.x and 16.0.10.x; the highlight fix was confirmed by the developer and the reporting user.
+- Install `ColorOS-Live-Lyrics-Bridge-v3.7.1.apk` and the matching Provider APK from the same release when upgrading. ColorOS 16.0.10.x users must upgrade.
 
 ### Highlights
 
