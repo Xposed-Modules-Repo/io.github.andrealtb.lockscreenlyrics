@@ -20,6 +20,8 @@
 - 修复翻译按钮图标加载（模块图标改为从资源所属包直接加载）与无翻译歌曲时“只剩 4 个按钮”的
   问题；设置页建立播放器卡片接入约定（按是否有翻译源显示开关），Spotify、Metrolist 显示
   “不支持翻译”且不显示任何开关，并修复 Metrolist 卡片误灰置。
+- 新增 OPlus 媒体黑名单放行：模块管理播放器（内置适配器与 Provider 桥接播放器）在黑名单
+  查询命中时放行；其他包需在清单中显式声明接入并经策略门控，未命中保持系统原判定。
 - Apple Music 为已知特殊案例：评分式收藏槽位的图标保留播放器自带（与翻译功能匹配）。
 - 通过单元测试（423 项）与 Debug 构建；QQ/酷狗/Salt/Cone/LX/Poweramp/汽水/Metrolist 真机
   验证通过。
@@ -112,6 +114,10 @@ This is not a floating overlay. The system still owns the lyric UI; the module a
   and the "only 4 buttons" issue on songs without translation. Player cards gained a capability
   contract (switches shown by translation-source support); Spotify and Metrolist show "No
   translation support" without switches, and the Metrolist card no longer greys out wrongly.
+- Adds an OPlus media-blacklist bypass: module-managed players (built-in adapters and
+  provider-bridged players) are released when the OPlus blacklist query hits; other packages
+  require an explicit manifest opt-in gated by LockscreenIntegrationPolicy, and unlisted
+  packages keep the system verdict.
 - Apple Music is a known special case: its rating-style favorite slot keeps the player's own icon.
 - Passes unit tests (423) and Debug builds; device-verified on QQ Music / KuGou / Salt /
   ConePlayer / LX / Poweramp / QiShui / Metrolist.
