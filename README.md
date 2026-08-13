@@ -10,6 +10,22 @@
 
 它不是悬浮窗：歌词仍由系统原生界面显示，模块负责补充完整时间轴、逐字高亮、翻译和外观设置。
 
+### v3.7.2 更新了什么
+
+- 重构“播放器翻译设置”：翻译开关按钮统一占用锁屏媒体卡收藏槽位（媒体卡固定 5 个按钮，只能
+  替换、不能新增）。QQ 音乐、原版酷狗此前失效的翻译按钮，经“CustomAction 映射 → OPlus heart
+  标记 → Rule0 单动作”三级定位恢复可用。
+- 新增分播放器“锁屏媒体卡翻译按钮”开关（默认开）：开 = 收藏槽位换成翻译开关；关 = 恢复播放器
+  自带收藏。公开注入按钮（LX/Poweramp/Cone 等）与 Salt 自带桌面歌词按钮同样受开关控制。
+- 修复翻译按钮图标加载（模块图标改为从资源所属包直接加载）与无翻译歌曲时“只剩 4 个按钮”的
+  问题；设置页建立播放器卡片接入约定（按是否有翻译源显示开关），Spotify、Metrolist 显示
+  “不支持翻译”且不显示任何开关，并修复 Metrolist 卡片误灰置。
+- Apple Music 为已知特殊案例：评分式收藏槽位的图标保留播放器自带（与翻译功能匹配）。
+- 通过单元测试（423 项）与 Debug 构建；QQ/酷狗/Salt/Cone/LX/Poweramp/汽水/Metrolist 真机
+  验证通过。
+- 升级时请从同一 Release 安装 `ColorOS-Live-Lyrics-Bridge-v3.7.2.apk`；本次无 Provider
+  变更，无需更新 Provider。
+
 ### v3.7.1 更新了什么
 
 - 修复 ColorOS 16.0.10.x（如 OPPO X9s Pro）上 SystemUI 歌词 Hook 失效：该版本系统界面版本号仍为 16.99.12，但媒体 RUS 管理器已重构（`getRusWhiteList` 删除、`saveListToSP` 变静态 10 参数、`updatePkgActionsRule` 增至 6 个 Map、白名单改经 `MediaRusConfig` 暴露）。Bridge 的 DexKit 解析升级为双锚点集并兼容新旧方法签名，解析日志新增 `rusVariant`；16.0.9.x 及更早构建行为保持不变。
@@ -82,6 +98,25 @@
 Bring lyrics from more music apps to the native ColorOS / OPlus lock-screen lyric page.
 
 This is not a floating overlay. The system still owns the lyric UI; the module adds full timelines, word-by-word highlighting, translations, and appearance controls.
+
+### What's new in v3.7.2
+
+- Reworks "Player translation settings": the translation toggle now occupies the media card's
+  favorite slot (the card is fixed at 5 buttons). QQ Music and KuGou (original), whose
+  translation buttons were broken, are restored through a three-level favorite locator
+  (CustomAction mapping → OPlus heart marker → single-action Rule0 fallback).
+- Adds a per-player "Media-card translation button" switch (default on): on = the favorite slot
+  becomes the translation toggle; off = the player's own button returns. The switch also covers
+  injected public buttons (LX/Poweramp/ConePlayer, etc.) and Salt's own desktop-lyrics button.
+- Fixes translation-button icon loading (the module icon is now loaded from its owning package)
+  and the "only 4 buttons" issue on songs without translation. Player cards gained a capability
+  contract (switches shown by translation-source support); Spotify and Metrolist show "No
+  translation support" without switches, and the Metrolist card no longer greys out wrongly.
+- Apple Music is a known special case: its rating-style favorite slot keeps the player's own icon.
+- Passes unit tests (423) and Debug builds; device-verified on QQ Music / KuGou / Salt /
+  ConePlayer / LX / Poweramp / QiShui / Metrolist.
+- Install `ColorOS-Live-Lyrics-Bridge-v3.7.2.apk` from the same release; no Provider changes in
+  this release.
 
 ### What's new in v3.7.1
 
