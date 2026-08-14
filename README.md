@@ -18,31 +18,6 @@
 - 升级时请从同一 Release 安装 `ColorOS-Live-Lyrics-Bridge-v3.7.3.apk`；本次无 Provider
   变更，无需更新 Provider。
 
-### v3.7.2 更新了什么
-
-- 重构“播放器翻译设置”：翻译开关按钮统一占用锁屏媒体卡收藏槽位（媒体卡固定 5 个按钮，只能
-  替换、不能新增）。QQ 音乐、原版酷狗此前失效的翻译按钮，经“CustomAction 映射 → OPlus heart
-  标记 → Rule0 单动作”三级定位恢复可用。
-- 新增分播放器“锁屏媒体卡翻译按钮”开关（默认开）：开 = 收藏槽位换成翻译开关；关 = 恢复播放器
-  自带收藏。公开注入按钮（LX/Poweramp/Cone 等）与 Salt 自带桌面歌词按钮同样受开关控制。
-- 修复翻译按钮图标加载（模块图标改为从资源所属包直接加载）与无翻译歌曲时“只剩 4 个按钮”的
-  问题；设置页建立播放器卡片接入约定（按是否有翻译源显示开关），Spotify、Metrolist 显示
-  “不支持翻译”且不显示任何开关，并修复 Metrolist 卡片误灰置。
-- 新增 OPlus 媒体黑名单放行：模块管理播放器（内置适配器与 Provider 桥接播放器）在黑名单
-  查询命中时放行；其他包需在清单中显式声明接入并经策略门控，未命中保持系统原判定。
-- Apple Music 为已知特殊案例：评分式收藏槽位的图标保留播放器自带（与翻译功能匹配）。
-- 通过单元测试（423 项）与 Debug 构建；QQ/酷狗/Salt/Cone/LX/Poweramp/汽水/Metrolist 真机
-  验证通过。
-- 升级时请从同一 Release 安装 `ColorOS-Live-Lyrics-Bridge-v3.7.2.apk`；本次无 Provider
-  变更，无需更新 Provider。
-
-### v3.7.1 更新了什么
-
-- 修复 ColorOS 16.0.10.x（如 OPPO X9s Pro）上 SystemUI 歌词 Hook 失效：该版本系统界面版本号仍为 16.99.12，但媒体 RUS 管理器已重构（`getRusWhiteList` 删除、`saveListToSP` 变静态 10 参数、`updatePkgActionsRule` 增至 6 个 Map、白名单改经 `MediaRusConfig` 暴露）。Bridge 的 DexKit 解析升级为双锚点集并兼容新旧方法签名，解析日志新增 `rusVariant`；16.0.9.x 及更早构建行为保持不变。
-- 修复 v3.7.0 回归：普通逐行歌词（无逐字时间戳）的实时行不再以 100% 不透明度高亮。恢复激活行整行高亮，并在"普通逐行歌词进度"开关开启时同样生效；带逐字歌词与 AOD 低帧率填充行为不变。
-- 两项修复均通过单元测试（42 套件 / 412 项）与 Debug 构建；16.0.9.x 与 16.0.10.x 真机验证通过，高亮修复经开发者与反馈用户实测确认。
-- 升级时请从同一 Release 安装 `ColorOS-Live-Lyrics-Bridge-v3.7.1.apk` 与对应播放器的 Provider APK；ColorOS 16.0.10.x 用户本次为必须升级。
-
 ### 主要功能
 
 - 原生锁屏与 AOD 歌词，不额外覆盖悬浮窗口。
@@ -117,36 +92,6 @@ This is not a floating overlay. The system still owns the lyric UI; the module a
 - Passes unit tests and Debug builds; device-verified on Salt 12.2.1.
 - Install `ColorOS-Live-Lyrics-Bridge-v3.7.3.apk` from the same release; no Provider changes
   in this release.
-
-### What's new in v3.7.2
-
-- Reworks "Player translation settings": the translation toggle now occupies the media card's
-  favorite slot (the card is fixed at 5 buttons). QQ Music and KuGou (original), whose
-  translation buttons were broken, are restored through a three-level favorite locator
-  (CustomAction mapping → OPlus heart marker → single-action Rule0 fallback).
-- Adds a per-player "Media-card translation button" switch (default on): on = the favorite slot
-  becomes the translation toggle; off = the player's own button returns. The switch also covers
-  injected public buttons (LX/Poweramp/ConePlayer, etc.) and Salt's own desktop-lyrics button.
-- Fixes translation-button icon loading (the module icon is now loaded from its owning package)
-  and the "only 4 buttons" issue on songs without translation. Player cards gained a capability
-  contract (switches shown by translation-source support); Spotify and Metrolist show "No
-  translation support" without switches, and the Metrolist card no longer greys out wrongly.
-- Adds an OPlus media-blacklist bypass: module-managed players (built-in adapters and
-  provider-bridged players) are released when the OPlus blacklist query hits; other packages
-  require an explicit manifest opt-in gated by LockscreenIntegrationPolicy, and unlisted
-  packages keep the system verdict.
-- Apple Music is a known special case: its rating-style favorite slot keeps the player's own icon.
-- Passes unit tests (423) and Debug builds; device-verified on QQ Music / KuGou / Salt /
-  ConePlayer / LX / Poweramp / QiShui / Metrolist.
-- Install `ColorOS-Live-Lyrics-Bridge-v3.7.2.apk` from the same release; no Provider changes in
-  this release.
-
-### What's new in v3.7.1
-
-- Fixes SystemUI lyric-hook failure on ColorOS 16.0.10.x (e.g. OPPO X9s Pro): the SystemUI still reports version 16.99.12, but its media RUS manager was refactored (`getRusWhiteList` removed, `saveListToSP` now a static 10-parameter method, `updatePkgActionsRule` grew to 6 maps, and the whitelist moved into `MediaRusConfig`). DexKit resolution now uses dual anchor sets and accepts both old and new method shapes, and the resolution log gained a `rusVariant` marker; 16.0.9.x and older builds are unchanged.
-- Fixes a v3.7.0 regression where the active line of plain line-timed lyrics (no word timing) lost its full-opacity highlight. The active line is highlighted again in both line-timed progress modes; word-timed reveal and AOD low-frame-rate fill are unchanged.
-- Both fixes pass unit tests (42 suites / 412 tests) and Debug builds, with device verification on 16.0.9.x and 16.0.10.x; the highlight fix was confirmed by the developer and the reporting user.
-- Install `ColorOS-Live-Lyrics-Bridge-v3.7.1.apk` and the matching Provider APK from the same release when upgrading. ColorOS 16.0.10.x users must upgrade.
 
 ### Highlights
 
