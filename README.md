@@ -10,6 +10,14 @@
 
 它不是悬浮窗：歌词仍由系统原生界面显示，模块负责补充完整时间轴、逐字高亮、翻译和外观设置。
 
+### v3.7.3 更新了什么
+
+- 适配 Salt Player 12.2.1：官方在该版本把歌词发布协程方法名混淆（invokeSuspend 被重命名），
+  模块改为按结构签名回退解析，歌词获取恢复正常；旧版本 Salt Player 不受影响。
+- 通过单元测试与 Debug 构建；Salt 12.2.1 真机验证通过。
+- 升级时请从同一 Release 安装 `ColorOS-Live-Lyrics-Bridge-v3.7.3.apk`；本次无 Provider
+  变更，无需更新 Provider。
+
 ### v3.7.2 更新了什么
 
 - 重构“播放器翻译设置”：翻译开关按钮统一占用锁屏媒体卡收藏槽位（媒体卡固定 5 个按钮，只能
@@ -100,6 +108,15 @@
 Bring lyrics from more music apps to the native ColorOS / OPlus lock-screen lyric page.
 
 This is not a floating overlay. The system still owns the lyric UI; the module adds full timelines, word-by-word highlighting, translations, and appearance controls.
+
+### What's new in v3.7.3
+
+- Adapts Salt Player 12.2.1: the official build obfuscated the lyric-publication coroutine
+  method name (invokeSuspend was renamed), and the module now resolves it structurally, so
+  lyric fetching works again; older Salt Player versions are unaffected.
+- Passes unit tests and Debug builds; device-verified on Salt 12.2.1.
+- Install `ColorOS-Live-Lyrics-Bridge-v3.7.3.apk` from the same release; no Provider changes
+  in this release.
 
 ### What's new in v3.7.2
 
