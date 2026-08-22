@@ -10,13 +10,12 @@
 
 它不是悬浮窗：歌词仍由系统原生界面显示，模块负责补充完整时间轴、逐字高亮、翻译和外观设置。
 
-### v3.7.3 更新了什么
+### v3.8.0 更新了什么
 
-- 适配 Salt Player 12.2.1：官方在该版本把歌词发布协程方法名混淆（invokeSuspend 被重命名），
-  模块改为按结构签名回退解析，歌词获取恢复正常；旧版本 Salt Player 不受影响。
-- 通过单元测试与 Debug 构建；Salt 12.2.1 真机验证通过。
-- 升级时请从同一 Release 安装 `ColorOS-Live-Lyrics-Bridge-v3.7.3.apk`；本次无 Provider
-  变更，无需更新 Provider。
+- 酷我音乐现在无需开启车载歌词模式即可提供完整逐行、逐字和翻译歌词；锁屏按钮、封面、切歌、暂停和 seek 链路完成稳定适配。
+- 酷狗音乐 Provider 修复预取歌词串曲、车载歌词元数据身份变化和原生封面恢复问题。
+- Bridge 与酷我 Provider 增加 DexKit 结构兼容，降低 ColorOS/SystemUIPlugin 和酷我版本更新导致适配失效的风险。
+- 升级时请从同一 Release 安装 `ColorOS-Live-Lyrics-Bridge-v3.8.0.apk`；酷我用户同时更新 `LyricProvider-KuWo-v3.8.0.apk`（Provider 版本 `2.0.0`）。
 
 ### 主要功能
 
@@ -51,6 +50,7 @@
 | Spotify | `LyricProvider-Spotify` | 目前仅原文标准歌词，不支持翻译 |
 | 汽水音乐 | `LyricProvider-QiShui` | 逐字、翻译；需做好 Root 隐藏并完成下方设置 |
 | 酷狗音乐 / 概念版 | `LyricProvider-KuGou` | 逐字、翻译 |
+| 酷我音乐 | `LyricProvider-KuWo` | 完整逐行、逐字和翻译歌词，无需车载歌词模式 |
 
 [Metrolist](https://github.com/metrolistgroup/metrolist) 是**适用于安卓系统的 YouTube Music 客户端**。由于 Metrolist 本身没有稳定的歌词获取接口，本 Provider 采用与 Metrolist 相同的方式从第三方歌词提供商获取歌词，因此两者获取的歌词可能存在差异。
 
@@ -62,7 +62,7 @@
 4. 在 LSPosed 中单独启用 Provider，只勾选它对应的音乐 App。
 5. 重启手机。
 
-`LyricProvider-<版本>.zip` 只是全部 Provider APK 的下载合集，不是 Recovery 刷机包。只安装自己需要的 Provider 即可。
+`LyricProvider-All-<版本>.zip` 只是全部 Provider APK 的下载合集，不是 Recovery 刷机包。只安装自己需要的 Provider 即可。
 
 **汽水音乐用户：**还需在 LSP 管理器中为汽水音乐开启“还原内联钩子”，并按管理器提示处理 `libart.so`；同时需做好 Root 隐藏。
 
@@ -84,14 +84,12 @@ Bring lyrics from more music apps to the native ColorOS / OPlus lock-screen lyri
 
 This is not a floating overlay. The system still owns the lyric UI; the module adds full timelines, word-by-word highlighting, translations, and appearance controls.
 
-### What's new in v3.7.3
+### What's new in v3.8.0
 
-- Adapts Salt Player 12.2.1: the official build obfuscated the lyric-publication coroutine
-  method name (invokeSuspend was renamed), and the module now resolves it structurally, so
-  lyric fetching works again; older Salt Player versions are unaffected.
-- Passes unit tests and Debug builds; device-verified on Salt 12.2.1.
-- Install `ColorOS-Live-Lyrics-Bridge-v3.7.3.apk` from the same release; no Provider changes
-  in this release.
+- KuWo Music now provides complete line-timed, word-timed, and translated lyrics without enabling car lyrics mode; the lock-screen button, artwork, track changes, pause, and seek paths are verified.
+- The KuGou Music Provider fixes prefetched foreign lyrics, car-lyric metadata identity changes, and native artwork recovery.
+- The Bridge and KuWo Provider use structural DexKit compatibility for later ColorOS/SystemUIPlugin and KuWo updates.
+- Install `ColorOS-Live-Lyrics-Bridge-v3.8.0.apk` from the same release; KuWo users should also update `LyricProvider-KuWo-v3.8.0.apk` (Provider version `2.0.0`).
 
 ### Highlights
 
@@ -126,6 +124,7 @@ This is not a floating overlay. The system still owns the lyric UI; the module a
 | Spotify | `LyricProvider-Spotify` | Standard original lyrics only; no translation support yet |
 | QiShui Music | `LyricProvider-QiShui` | Word-timed and translated lyrics; proper root hiding and the extra step below are required |
 | KuGou Music / Concept | `LyricProvider-KuGou` | Word-timed lyrics and translations |
+| KuWo Music | `LyricProvider-KuWo` | Full line-timed, word-timed, and translated lyrics without car lyrics mode |
 
 [Metrolist](https://github.com/metrolistgroup/metrolist) is a **YouTube Music client for Android**. Because Metrolist itself does not provide a stable lyric retrieval interface, this Provider retrieves lyrics from third-party lyric providers in the same way as Metrolist. The lyrics selected by the Provider may therefore differ from those shown inside Metrolist.
 
@@ -137,7 +136,7 @@ This is not a floating overlay. The system still owns the lyric UI; the module a
 4. Enable each Provider separately in LSPosed and select only its matching music app.
 5. Reboot the device.
 
-`LyricProvider-<version>.zip` is only a bundle of all Provider APKs; it is not a Recovery-flashable package. Install only the Providers you need.
+`LyricProvider-All-<version>.zip` is only a bundle of all Provider APKs; it is not a Recovery-flashable package. Install only the Providers you need.
 
 **QiShui users:** also enable **Restore inline hooks** for QiShui in the LSP manager and follow its instructions for handling `libart.so`; ensure root hiding is properly configured as well.
 
