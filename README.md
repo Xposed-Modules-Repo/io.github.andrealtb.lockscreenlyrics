@@ -15,6 +15,7 @@
 - 酷我音乐现在无需开启车载歌词模式即可提供完整逐行、逐字和翻译歌词；锁屏按钮、封面、切歌、暂停和 seek 链路完成稳定适配。
 - 酷狗音乐 Provider 修复预取歌词串曲、车载歌词元数据身份变化和原生封面恢复问题。
 - Bridge 与酷我 Provider 增加 DexKit 结构兼容，降低 ColorOS/SystemUIPlugin 和酷我版本更新导致适配失效的风险。
+- Bridge 登记 Halcyon（`com.ella.music`）的原生 `lyricInfo` + v4 回退，以及 Flamingo（`yos.music.player`）的原生 v4 source；两者都无需额外 Provider APK。
 - 升级时请从同一 Release 安装 `ColorOS-Live-Lyrics-Bridge-v3.8.0.apk`；酷我用户同时更新 `LyricProvider-KuWo-v3.8.0.apk`（Provider 版本 `2.0.0`）。
 
 ### 主要功能
@@ -50,7 +51,9 @@
 | Spotify | `LyricProvider-Spotify` | 目前仅原文标准歌词，不支持翻译 |
 | 汽水音乐 | `LyricProvider-QiShui` | 逐字、翻译；需做好 Root 隐藏并完成下方设置 |
 | 酷狗音乐 / 概念版 | `LyricProvider-KuGou` | 逐字、翻译 |
-| 酷我音乐 | `LyricProvider-KuWo` | 完整逐行、逐字和翻译歌词，无需车载歌词模式 |
+| 酷我音乐 | `LyricProvider-KuWo` | 通过原生 MediaSession `lyricInfo` 和 Lyricon 发送官方 LRC/LRCX 的完整逐行、逐字和翻译歌词；无需车载歌词模式，并保持原生封面元数据 |
+| Halcyon | 无 | 原生 `lyricInfo`，并通过 `com.ella.music` 的 `lyricprovider/halcyon` v4 回退 |
+| Flamingo | 无 | 通过 `yos.music.player` 的 `lyricprovider/flamingo` 原生 v4 接入 |
 
 [Metrolist](https://github.com/metrolistgroup/metrolist) 是**适用于安卓系统的 YouTube Music 客户端**。由于 Metrolist 本身没有稳定的歌词获取接口，本 Provider 采用与 Metrolist 相同的方式从第三方歌词提供商获取歌词，因此两者获取的歌词可能存在差异。
 
@@ -89,6 +92,7 @@ This is not a floating overlay. The system still owns the lyric UI; the module a
 - KuWo Music now provides complete line-timed, word-timed, and translated lyrics without enabling car lyrics mode; the lock-screen button, artwork, track changes, pause, and seek paths are verified.
 - The KuGou Music Provider fixes prefetched foreign lyrics, car-lyric metadata identity changes, and native artwork recovery.
 - The Bridge and KuWo Provider use structural DexKit compatibility for later ColorOS/SystemUIPlugin and KuWo updates.
+- The Bridge admits Halcyon's native `lyricInfo` plus v4 fallback (`com.ella.music` / `lyricprovider/halcyon`) and Flamingo's native v4 source (`yos.music.player` / `lyricprovider/flamingo`); neither needs an extra Provider APK.
 - Install `ColorOS-Live-Lyrics-Bridge-v3.8.0.apk` from the same release; KuWo users should also update `LyricProvider-KuWo-v3.8.0.apk` (Provider version `2.0.0`).
 
 ### Highlights
@@ -124,7 +128,9 @@ This is not a floating overlay. The system still owns the lyric UI; the module a
 | Spotify | `LyricProvider-Spotify` | Standard original lyrics only; no translation support yet |
 | QiShui Music | `LyricProvider-QiShui` | Word-timed and translated lyrics; proper root hiding and the extra step below are required |
 | KuGou Music / Concept | `LyricProvider-KuGou` | Word-timed lyrics and translations |
-| KuWo Music | `LyricProvider-KuWo` | Full line-timed, word-timed, and translated lyrics without car lyrics mode |
+| KuWo Music | `LyricProvider-KuWo` | Official LRC/LRCX lyrics through native MediaSession `lyricInfo` and Lyricon; full line-timed, word-timed, and translated lyrics without car lyrics mode |
+| Halcyon | None | Native `lyricInfo` with a v4 fallback from `com.ella.music` (`lyricprovider/halcyon`) |
+| Flamingo | None | Native v4 integration from `yos.music.player` (`lyricprovider/flamingo`) |
 
 [Metrolist](https://github.com/metrolistgroup/metrolist) is a **YouTube Music client for Android**. Because Metrolist itself does not provide a stable lyric retrieval interface, this Provider retrieves lyrics from third-party lyric providers in the same way as Metrolist. The lyrics selected by the Provider may therefore differ from those shown inside Metrolist.
 
