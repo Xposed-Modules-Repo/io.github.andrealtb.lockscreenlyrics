@@ -10,13 +10,11 @@
 
 它不是悬浮窗：歌词仍由系统原生界面显示，模块负责补充完整时间轴、逐字高亮、翻译和外观设置。
 
-### v3.8.0 更新了什么
+### v3.8.1 更新了什么
 
-- 酷我音乐现在无需开启车载歌词模式即可提供完整逐行、逐字和翻译歌词；锁屏按钮、封面、切歌、暂停和 seek 链路完成稳定适配。
-- 酷狗音乐 Provider 修复预取歌词串曲、车载歌词元数据身份变化和原生封面恢复问题。
-- Bridge 与酷我 Provider 增加 DexKit 结构兼容，降低 ColorOS/SystemUIPlugin 和酷我版本更新导致适配失效的风险。
-- Bridge 登记 Halcyon（`com.ella.music`）的原生 `lyricInfo` + v4 回退，以及 Flamingo（`yos.music.player`）的原生 v4 source；两者都无需额外 Provider APK。
-- 升级时请从同一 Release 安装 `ColorOS-Live-Lyrics-Bridge-v3.8.0.apk`；酷我用户同时更新 `LyricProvider-KuWo-v3.8.0.apk`（Provider 版本 `2.0.0`）。
+- 修复酷我周期性重发 `1x1` 占位封面导致通知栏媒体卡片播放数秒后变成纯色的问题；真实封面仍由酷我原生传递，Bridge 仅在严格同曲身份下恢复无效结果。
+- 酷我 Provider 增加歌词获取失败后的 `2s/5s/10s` 有界重试，减少切歌后偶发卡在大封面、必须手动暂停才能恢复的问题。
+- 升级时请从同一 Release 安装 `ColorOS-Live-Lyrics-Bridge-v3.8.1.apk`；酷我用户同时更新 `LyricProvider-KuWo-v3.8.1.apk`（Provider 版本 `2.1.0`）。
 
 ### 主要功能
 
@@ -87,13 +85,11 @@ Bring lyrics from more music apps to the native ColorOS / OPlus lock-screen lyri
 
 This is not a floating overlay. The system still owns the lyric UI; the module adds full timelines, word-by-word highlighting, translations, and appearance controls.
 
-### What's new in v3.8.0
+### What's new in v3.8.1
 
-- KuWo Music now provides complete line-timed, word-timed, and translated lyrics without enabling car lyrics mode; the lock-screen button, artwork, track changes, pause, and seek paths are verified.
-- The KuGou Music Provider fixes prefetched foreign lyrics, car-lyric metadata identity changes, and native artwork recovery.
-- The Bridge and KuWo Provider use structural DexKit compatibility for later ColorOS/SystemUIPlugin and KuWo updates.
-- The Bridge admits Halcyon's native `lyricInfo` plus v4 fallback (`com.ella.music` / `lyricprovider/halcyon`) and Flamingo's native v4 source (`yos.music.player` / `lyricprovider/flamingo`); neither needs an extra Provider APK.
-- Install `ColorOS-Live-Lyrics-Bridge-v3.8.0.apk` from the same release; KuWo users should also update `LyricProvider-KuWo-v3.8.0.apk` (Provider version `2.0.0`).
+- Fixes the notification-shade media card turning into solid-color artwork after KuWo periodically republishes a `1x1` placeholder; genuine KuWo artwork remains on the native path, with Bridge repair limited to strict same-track identity.
+- Adds bounded `2s/5s/10s` retries to the KuWo Provider lyric fetch path, reducing rare post-track-change stalls that previously required a manual pause to recover.
+- Install `ColorOS-Live-Lyrics-Bridge-v3.8.1.apk` from the same release; KuWo users should also update `LyricProvider-KuWo-v3.8.1.apk` (Provider version `2.1.0`).
 
 ### Highlights
 
