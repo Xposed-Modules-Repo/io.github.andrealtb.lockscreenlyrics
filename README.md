@@ -6,151 +6,121 @@
 
 ## 简体中文
 
-把更多音乐 App 的歌词送进 ColorOS / OPlus 自带的锁屏歌词页面。
+为 ColorOS / OPlus 原生锁屏与 AOD 歌词页面提供完整时间轴、逐字高亮、翻译、样式与兼容
+增强。它不是悬浮窗；歌词界面仍由 SystemUI 绘制。
 
-它不是悬浮窗：歌词仍由系统原生界面显示，模块负责补充完整时间轴、逐字高亮、翻译和外观设置。
+### v4.0.0
 
-### v3.8.1 更新了什么
-
-- 修复酷我周期性重发 `1x1` 占位封面导致通知栏媒体卡片播放数秒后变成纯色的问题；真实封面仍由酷我原生传递，Bridge 仅在严格同曲身份下恢复无效结果。
-- 酷我 Provider 增加歌词获取失败后的 `2s/5s/10s` 有界重试，减少切歌后偶发卡在大封面、必须手动暂停才能恢复的问题。
-- 升级时请从同一 Release 安装 `ColorOS-Live-Lyrics-Bridge-v3.8.1.apk`；酷我用户同时更新 `LyricProvider-KuWo-v3.8.1.apk`（Provider 版本 `2.1.0`）。
-
-### 主要功能
-
-- 原生锁屏与 AOD 歌词，不额外覆盖悬浮窗口。
-- 普通逐行、逐字高亮与翻译歌词。
-- 长句自动换行或平滑浏览，兼顾中文、日文等无空格文本。
-- 四种外观预设和实时预览。
-- 可调颜色、透明度、光晕、模糊、缩放、动效、字号、字重和对齐；歌词之间与同一句内部换行的间距可以分开设置。
-- 可按播放器记住翻译开关，清理歌词开头的歌名、制作信息和版权行。
-- 歌词显示时可保持屏幕点亮，也可自定义亮屏时长。
-- 保留系统媒体卡片原本的上一首、播放/暂停和下一首操作。
+- Bridge 只作用于 `system` 和 `com.android.systemui`，不再进入播放器进程。
+- 12 个独立 Provider 从播放器自己的 MediaSession 发布标准 `lyricInfo`；只安装 Provider
+  也可以让受支持的 ColorOS 显示官方样式锁屏歌词。
+- 新增独立“歌词亮度与渐隐”页面：实时/未高亮/翻译/非实时亮度、上下边缘渐隐和额外
+  非活动行淡化。
+- 翻译按钮即时刷新，并修复跨播放器图标颜色与大小。
+- 修复居中/右对齐歌词从错误左侧 pivot 缩放的问题。
+- 新增完整 Bridge 配置备份/恢复与确认后全量重置。
+- Bridge 巨型方法、重复解析和热路径扫描已完成 Phase 6 治理。
 
 ### 使用条件
 
 - 已 Root，并安装支持 **libxposed API 102** 的 LSPosed / LSP 管理器。
-- 系统本身带有 ColorOS / OPlus 原生锁屏歌词页面。
-- 当前主要围绕 ColorOS 16 的歌词链路开发和验证。不同 OPPO、一加、真我机型及不同 SystemUI 版本可能需要单独适配。
-- 如果系统原本没有锁屏歌词页面，本模块不会新建一个悬浮歌词窗口。
+- 系统本身包含 ColorOS / OPlus 原生锁屏歌词页面。
+- 当前主要围绕 ColorOS 16 验证；系统和播放器大版本更新可能需要重新适配。
 
-### 播放器支持
+### Provider 矩阵
 
-| 播放器 | 还要安装什么 | 歌词能力 |
-| --- | --- | --- |
-| Salt Player | 无 | Bridge 内置适配；逐字与翻译取决于播放器数据 |
-| ConePlayer / 光锥音乐 | 无 | Bridge 内置适配；正式版与 Google Play 版 |
-| [Metrolist](https://github.com/metrolistgroup/metrolist) | `LyricProvider-Metrolist` | 按播放器设置的供应商顺序搜索；BetterLyrics / KuGou 支持逐字歌词，LrcLib 可回退逐行歌词；不支持翻译歌词，也不支持词幕（Lyricon） |
-| QQ 音乐 | `LyricProvider-QQMusic` | 逐字、翻译 |
-| 网易云音乐 / 荣耀版 | `LyricProvider-163Music` | 逐字、翻译 |
-| Apple Music | `LyricProvider-AppleMusic` | 逐字、翻译；不输出背景人声和对唱分轨 |
-| LX Music（ToSide / Walnut 版本） | `LyricProvider-LXMusic` | 完整时间轴歌词；播放器提供时支持翻译歌词 |
-| Poweramp | `LyricProvider-Poweramp` | 本地内嵌歌词与可匹配的在线歌词 |
-| Spotify | `LyricProvider-Spotify` | 目前仅原文标准歌词，不支持翻译 |
-| 汽水音乐 | `LyricProvider-QiShui` | 逐字、翻译；需做好 Root 隐藏并完成下方设置 |
-| 酷狗音乐 / 概念版 | `LyricProvider-KuGou` | 逐字、翻译 |
-| 酷我音乐 | `LyricProvider-KuWo` | 通过原生 MediaSession `lyricInfo` 和 Lyricon 发送官方 LRC/LRCX 的完整逐行、逐字和翻译歌词；无需车载歌词模式，并保持原生封面元数据 |
-| Halcyon | 无 | 原生 `lyricInfo`，并通过 `com.ella.music` 的 `lyricprovider/halcyon` v4 回退 |
-| Flamingo | 无 | 通过 `yos.music.player` 的 `lyricprovider/flamingo` 原生 v4 接入 |
+| 播放器 | 额外模块 | 能力 |
+|---|---|---|
+| Salt Player | `Provider-Salt` | 逐字、翻译 |
+| ConePlayer / GP | `Provider-Cone` | 完整时间轴、翻译 |
+| 酷我 | `Provider-KuWo` | 官方 payload 追加逐字/翻译 |
+| LX / Walnut | `Provider-LX` | 逐字、翻译、蓝牙身份与封面兼容 |
+| Poweramp | `Provider-Poweramp` | sidecar / 内嵌歌词、翻译 |
+| Metrolist | `Provider-Metrolist` | 多歌词源，不支持翻译 |
+| 酷狗 / 概念版 | `Provider-KuGou` | 官方 payload 追加逐字/翻译 |
+| QQ 音乐官方版 | `Provider-QQ` | QRC 逐字、翻译 |
+| 网易云 / 荣耀 / 9.0.40 | `Provider-NetEase` | 官方追加或构造逐字/翻译 |
+| Apple Music | `Provider-Apple` | TTML 逐字、翻译 |
+| Spotify | `Provider-Spotify` | 逐行/逐字，不支持翻译 |
+| 汽水音乐 | `Provider-QiShui` | TrackLyric / 缓存逐字、翻译 |
 
-[Metrolist](https://github.com/metrolistgroup/metrolist) 是**适用于安卓系统的 YouTube Music 客户端**。由于 Metrolist 本身没有稳定的歌词获取接口，本 Provider 采用与 Metrolist 相同的方式从第三方歌词提供商获取歌词，因此两者获取的歌词可能存在差异。
+### 安装与升级
 
-### 安装方法
+1. 安装自己使用的 `ColorOS-Live-Lyrics-Provider-<Name>-v4.0.0.apk`，在 LSPosed 中只
+   勾选对应播放器。
+2. 安装 `ColorOS-Live-Lyrics-Bridge-v4.0.0.apk`，Bridge 作用域只保留 `system` 与
+   `com.android.systemui`。
+3. 不要让旧 Provider 与 4.0 Provider 同时 hook 一个播放器。
+4. 重启播放器和 SystemUI；首次安装或改变 scope 后建议重启设备。
 
-1. 安装 Release 中的 `ColorOS-Live-Lyrics-Bridge-<版本>.apk`。
-2. 在 LSPosed 中启用 Bridge，并保留推荐作用域。
-3. 表格中标注 Provider 的播放器，还要安装同一 Release 中对应的 `LyricProvider-*.apk`。
-4. 在 LSPosed 中单独启用 Provider，只勾选它对应的音乐 App。
-5. 重启手机。
+[3.8.x → 4.0 迁移指南](https://github.com/Andrea-lyz/ColorOS-Live-Lyrics-Bridge/blob/4.0/docs/4.0/MIGRATION-3.8-TO-4.0.zh-CN.md)
 
-`LyricProvider-All-<版本>.zip` 只是全部 Provider APK 的下载合集，不是 Recovery 刷机包。只安装自己需要的 Provider 即可。
+本项目不分发词幕 Provider。需要词幕时请从
+[LyricProvider 原项目](https://github.com/tomakino/LyricProvider) 获取，并向原项目反馈
+词幕显示/产品问题。
 
-**汽水音乐用户：**还需在 LSP 管理器中为汽水音乐开启“还原内联钩子”，并按管理器提示处理 `libart.so`；同时需做好 Root 隐藏。
+### 排错
 
-### 遇到问题先检查
+出现问题时提供机型、ROM/SystemUI 版本、播放器版本、Bridge/Provider 版本、LSPosed
+scope、复现步骤和脱敏日志。不要上传 token、cookie、完整私人歌词或个人媒体路径。
 
-- Bridge 和 Provider 是否来自同一个 Release。
-- 是否保留 Bridge 推荐作用域，并给 Provider 选中了正确的音乐 App。
-- 系统是否真的带有 OPlus 原生锁屏歌词页面。
-- 只有普通歌词、没有逐字或翻译时，通常是当前歌词源没有提供相应数据。
-- 系统或播放器大版本更新后失效，请在 Issues 中附上机型、系统、SystemUI、播放器版本和 LSPosed 日志。
-
-[下载完整 Release](https://github.com/Andrea-lyz/ColorOS-Live-Lyrics-Bridge/releases/latest) · [源码与详细说明](https://github.com/Andrea-lyz/ColorOS-Live-Lyrics-Bridge) · [问题反馈](https://github.com/Andrea-lyz/ColorOS-Live-Lyrics-Bridge/issues)
+[源码与详细文档](https://github.com/Andrea-lyz/ColorOS-Live-Lyrics-Bridge) ·
+[问题反馈](https://github.com/Andrea-lyz/ColorOS-Live-Lyrics-Bridge/issues)
 
 ---
 
 ## English
 
-Bring lyrics from more music apps to the native ColorOS / OPlus lock-screen lyric page.
+Enhances the native ColorOS / OPlus lock-screen and AOD lyric page with complete timelines,
+word-by-word highlighting, translations, appearance controls, and compatibility handling. It is
+not a floating overlay; SystemUI still owns the lyric surface.
 
-This is not a floating overlay. The system still owns the lyric UI; the module adds full timelines, word-by-word highlighting, translations, and appearance controls.
+### v4.0.0
 
-### What's new in v3.8.1
-
-- Fixes the notification-shade media card turning into solid-color artwork after KuWo periodically republishes a `1x1` placeholder; genuine KuWo artwork remains on the native path, with Bridge repair limited to strict same-track identity.
-- Adds bounded `2s/5s/10s` retries to the KuWo Provider lyric fetch path, reducing rare post-track-change stalls that previously required a manual pause to recover.
-- Install `ColorOS-Live-Lyrics-Bridge-v3.8.1.apk` from the same release; KuWo users should also update `LyricProvider-KuWo-v3.8.1.apk` (Provider version `2.1.0`).
-
-### Highlights
-
-- Native lock-screen and AOD lyrics, without a separate overlay.
-- Line-timed lyrics, word-by-word highlighting, and translations.
-- Better wrapping and smooth browsing for long CJK and other no-space text.
-- Four appearance presets with a live preview.
-- Controls for color, opacity, glow, blur, scale, motion, text size, weight, and alignment, with separate spacing for lyric rows and wrapped lines.
-- Per-player translation preferences and guided removal of leading title, credit, and copyright lines.
-- Optional keep-screen-awake behavior with a custom duration.
-- Preserves the stock media card's previous, play/pause, and next actions.
+- Bridge is scoped only to `system` and `com.android.systemui` and no longer enters player
+  processes.
+- Twelve independent Providers publish standard `lyricInfo` from player-owned MediaSessions.
+  Provider-only installation can drive the stock ColorOS lyric page on supported systems.
+- Added independent brightness controls for active/unrevealed/translation/inactive lanes, native
+  top/bottom fading, and optional inactive-row fading.
+- Translation actions update immediately with consistent cross-player icon presentation.
+- Center/right lyric scaling now uses the correct alignment pivot.
+- Added complete Bridge configuration backup/restore and confirmed full reset.
+- Phase 6 reduced repeated parsing/scans and split large model/draw responsibilities.
 
 ### Requirements
 
-- Root and an LSPosed / LSP manager that supports **libxposed API 102**.
-- A ColorOS / OPlus ROM that already provides the native lock-screen lyric page.
-- Current development and testing mainly target the ColorOS 16 lyric path. Compatibility may vary between OPPO, OnePlus, and realme devices or SystemUI releases.
-- The module does not create a floating lyric window on ROMs that have no native lyric page.
+- Root and an LSPosed/LSP manager with **libxposed API 102** support.
+- A ColorOS/OPlus ROM that already includes the native lock-screen lyric page.
+- Current validation focuses on ColorOS 16; major system/player updates can require renewed support.
 
-### Supported players
+### Provider matrix
 
-| Player | Additional module | Lyric support |
-| --- | --- | --- |
-| Salt Player | None | Built into the Bridge; word timing and translations depend on player data |
-| ConePlayer | None | Built into the Bridge; standard and Google Play packages |
-| [Metrolist](https://github.com/metrolistgroup/metrolist) | `LyricProvider-Metrolist` | Follows the configured provider order; BetterLyrics and KuGou support word timing, with LrcLib as a line-timed fallback; translations and Lyricon integration are not supported |
-| QQ Music | `LyricProvider-QQMusic` | Word-timed lyrics and translations |
-| NetEase Cloud Music / Honor edition | `LyricProvider-163Music` | Word-timed lyrics and translations |
-| Apple Music | `LyricProvider-AppleMusic` | Word-timed lyrics and translations; background-vocal and duet lanes are excluded |
-| LX Music (ToSide / Walnut variants) | `LyricProvider-LXMusic` | Full lyric timeline and translations when supplied by the player |
-| Poweramp | `LyricProvider-Poweramp` | Embedded local lyrics and lyrics available through provider matching |
-| Spotify | `LyricProvider-Spotify` | Standard original lyrics only; no translation support yet |
-| QiShui Music | `LyricProvider-QiShui` | Word-timed and translated lyrics; proper root hiding and the extra step below are required |
-| KuGou Music / Concept | `LyricProvider-KuGou` | Word-timed lyrics and translations |
-| KuWo Music | `LyricProvider-KuWo` | Official LRC/LRCX lyrics through native MediaSession `lyricInfo` and Lyricon; full line-timed, word-timed, and translated lyrics without car lyrics mode |
-| Halcyon | None | Native `lyricInfo` with a v4 fallback from `com.ella.music` (`lyricprovider/halcyon`) |
-| Flamingo | None | Native v4 integration from `yos.music.player` (`lyricprovider/flamingo`) |
+Salt, Cone/GP, KuWo, LX/Walnut, Poweramp, Metrolist, KuGou/Concept, QQ Music, NetEase/Honor/
+modified 9.0.40, Apple Music, Spotify, and QiShui are shipped as separate Provider APKs. Metrolist
+and Spotify currently have no translation; QQ Music HD is not in the 4.0 matrix.
 
-[Metrolist](https://github.com/metrolistgroup/metrolist) is a **YouTube Music client for Android**. Because Metrolist itself does not provide a stable lyric retrieval interface, this Provider retrieves lyrics from third-party lyric providers in the same way as Metrolist. The lyrics selected by the Provider may therefore differ from those shown inside Metrolist.
+### Install and upgrade
 
-### Installation
+1. Install the required `ColorOS-Live-Lyrics-Provider-<Name>-v4.0.0.apk` and select only its player
+   package in LSPosed.
+2. Install `ColorOS-Live-Lyrics-Bridge-v4.0.0.apk`; keep only `system` and
+   `com.android.systemui` in Bridge scope.
+3. Do not let an old Provider and a 4.0 Provider hook the same player.
+4. Restart the player and SystemUI; reboot after the first install or a scope change.
 
-1. Install `ColorOS-Live-Lyrics-Bridge-<version>.apk` from the release.
-2. Enable the Bridge in LSPosed and keep its recommended scope.
-3. For players marked with a Provider above, install the matching `LyricProvider-*.apk` from the same release.
-4. Enable each Provider separately in LSPosed and select only its matching music app.
-5. Reboot the device.
+[3.8.x → 4.0 migration guide](https://github.com/Andrea-lyz/ColorOS-Live-Lyrics-Bridge/blob/4.0/docs/4.0/MIGRATION-3.8-TO-4.0.md)
 
-`LyricProvider-All-<version>.zip` is only a bundle of all Provider APKs; it is not a Recovery-flashable package. Install only the Providers you need.
+Lyricon Providers are distributed by the
+[original LyricProvider project](https://github.com/tomakino/LyricProvider). Report Lyricon
+display/product issues there.
 
-**QiShui users:** also enable **Restore inline hooks** for QiShui in the LSP manager and follow its instructions for handling `libart.so`; ensure root hiding is properly configured as well.
+For a useful issue, include device/ROM/SystemUI/player versions, Bridge/Provider versions and
+scopes, reproduction steps, and sanitized logs. Never upload tokens, cookies, complete private
+lyrics, or personal media paths.
 
-### Quick checks when something does not work
-
-- Confirm that the Bridge and Providers came from the same release.
-- Keep the Bridge's recommended scope and select the correct music app for each Provider.
-- Confirm that the ROM actually has the native OPlus lock-screen lyric page.
-- If line lyrics work but word timing or translations do not, the lyric source probably does not supply that data.
-- After a major OS or player update, include the device, OS, SystemUI, player versions, and LSPosed logs in an issue.
-
-[Download the complete release](https://github.com/Andrea-lyz/ColorOS-Live-Lyrics-Bridge/releases/latest) · [Source and full documentation](https://github.com/Andrea-lyz/ColorOS-Live-Lyrics-Bridge) · [Report an issue](https://github.com/Andrea-lyz/ColorOS-Live-Lyrics-Bridge/issues)
+[Source and documentation](https://github.com/Andrea-lyz/ColorOS-Live-Lyrics-Bridge) ·
+[Report an issue](https://github.com/Andrea-lyz/ColorOS-Live-Lyrics-Bridge/issues)
 
 ### Support
 
