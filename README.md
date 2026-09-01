@@ -9,21 +9,21 @@
 为 ColorOS / OPlus 原生锁屏与 AOD 歌词页面提供完整时间轴、逐字高亮、翻译、样式与兼容
 增强。它不是悬浮窗；歌词界面仍由 SystemUI 绘制。
 
-### v4.0.0
+### v4.1.0
 
-- Bridge 只作用于 `system` 和 `com.android.systemui`，不再进入播放器进程。
-- 12 个独立 Provider 从播放器自己的 MediaSession 发布标准 `lyricInfo`；只安装 Provider
-  也可以让受支持的 ColorOS 显示官方样式锁屏歌词。
-- 新增独立“歌词亮度与渐隐”页面：实时/未高亮/翻译/非实时亮度、上下边缘渐隐和额外
-  非活动行淡化。
-- 翻译按钮即时刷新，并修复跨播放器图标颜色与大小。
-- 修复居中/右对齐歌词从错误左侧 pivot 缩放的问题。
-- 新增完整 Bridge 配置备份/恢复与确认后全量重置。
-- Bridge 巨型方法、重复解析和热路径扫描已完成 Phase 6 治理。
+- 12 个独立 Provider 全部迁移到 libxposed API 102、静态作用域与 Remote Preferences；
+  Provider 可以独立向 ColorOS SystemUI 发布标准 `lyricInfo`。
+- Bridge 继续只作用于 `system` 和 `com.android.systemui`，加强 MediaController 生命周期、
+  曲目身份、歌词发布代际、绘制失败回退、缓存所有权与日志隐私。
+- 修复酷狗冷启动首曲的同曲 generation 抖动和非单调官方时间轴，《回家的路》第一句可
+  正常显示，同时完整保留制作人员 credit。
+- 修复酷我冷启动第一首歌封面降级为纯色的问题，异步结果严格绑定曲目身份与 generation。
+- 修复 OPlus 媒体 action 图标兼容、Unicode 空白占位、负速率回绕以及设置页无障碍问题。
+- 保留 4.0 的亮度渐隐、翻译按钮、配置备份/恢复、AOD 与完整外观能力。
 
 ### 使用条件
 
-- 已 Root，并安装支持 **libxposed API 102** 的 LSPosed / LSP 管理器。
+- 已 Root，并安装支持 **libxposed API 102** 的 LSPosed / LSP 管理器；建议 LSPosed 2.2.0+。
 - 系统本身包含 ColorOS / OPlus 原生锁屏歌词页面。
 - 当前主要围绕 ColorOS 16 验证；系统和播放器大版本更新可能需要重新适配。
 
@@ -46,11 +46,11 @@
 
 ### 安装与升级
 
-1. 安装自己使用的 `ColorOS-Live-Lyrics-Provider-<Name>-v4.0.0.apk`，在 LSPosed 中只
+1. 安装自己使用的 `ColorOS-Live-Lyrics-Provider-<Name>-v4.1.0.apk`，在 LSPosed 中只
    勾选对应播放器。
-2. 安装 `ColorOS-Live-Lyrics-Bridge-v4.0.0.apk`，Bridge 作用域只保留 `system` 与
+2. 安装 `ColorOS-Live-Lyrics-Bridge-v4.1.0.apk`，Bridge 作用域只保留 `system` 与
    `com.android.systemui`。
-3. 不要让旧 Provider 与 4.0 Provider 同时 hook 一个播放器。
+3. 不要让旧 Provider 与 4.1 Provider 同时 hook 一个播放器。
 4. 重启播放器和 SystemUI；首次安装或改变 scope 后建议重启设备。
 
 [3.8.x → 4.0 迁移指南](https://github.com/Andrea-lyz/ColorOS-Live-Lyrics-Bridge/blob/4.0/docs/4.0/MIGRATION-3.8-TO-4.0.zh-CN.md)
@@ -75,22 +75,21 @@ Enhances the native ColorOS / OPlus lock-screen and AOD lyric page with complete
 word-by-word highlighting, translations, appearance controls, and compatibility handling. It is
 not a floating overlay; SystemUI still owns the lyric surface.
 
-### v4.0.0
+### v4.1.0
 
-- Bridge is scoped only to `system` and `com.android.systemui` and no longer enters player
-  processes.
-- Twelve independent Providers publish standard `lyricInfo` from player-owned MediaSessions.
-  Provider-only installation can drive the stock ColorOS lyric page on supported systems.
-- Added independent brightness controls for active/unrevealed/translation/inactive lanes, native
-  top/bottom fading, and optional inactive-row fading.
-- Translation actions update immediately with consistent cross-player icon presentation.
-- Center/right lyric scaling now uses the correct alignment pivot.
-- Added complete Bridge configuration backup/restore and confirmed full reset.
-- Phase 6 reduced repeated parsing/scans and split large model/draw responsibilities.
+- All 12 Providers now use libxposed API 102, static scope, and Remote Preferences while publishing
+  standard `lyricInfo` directly to ColorOS SystemUI.
+- Bridge remains limited to `system` and `com.android.systemui` and hardens controller lifecycle,
+  track identity, publication epochs, draw fallback, cache ownership, and diagnostic privacy.
+- Fixed KuGou first-track generation churn and non-monotonic official timelines, preserving every
+  production credit while showing the first real line on cold start.
+- Fixed first-track KuWo artwork degrading to a solid color with identity/generation-bound recovery.
+- Fixed OPlus media-action icon compatibility, Unicode blank placeholders, negative rewind, and
+  settings accessibility while retaining all 4.0 appearance, AOD, translation, and backup features.
 
 ### Requirements
 
-- Root and an LSPosed/LSP manager with **libxposed API 102** support.
+- Root and an LSPosed/LSP manager with **libxposed API 102** support; LSPosed 2.2.0+ is recommended.
 - A ColorOS/OPlus ROM that already includes the native lock-screen lyric page.
 - Current validation focuses on ColorOS 16; major system/player updates can require renewed support.
 
@@ -98,15 +97,15 @@ not a floating overlay; SystemUI still owns the lyric surface.
 
 Salt, Cone/GP, KuWo, LX/Walnut, Poweramp, Metrolist, KuGou/Concept, QQ Music, NetEase/Honor/
 modified 9.0.40, Apple Music, Spotify, and QiShui are shipped as separate Provider APKs. Metrolist
-and Spotify currently have no translation; QQ Music HD is not in the 4.0 matrix.
+and Spotify currently have no translation; QQ Music HD is not in the 4.1 matrix.
 
 ### Install and upgrade
 
-1. Install the required `ColorOS-Live-Lyrics-Provider-<Name>-v4.0.0.apk` and select only its player
+1. Install the required `ColorOS-Live-Lyrics-Provider-<Name>-v4.1.0.apk` and select only its player
    package in LSPosed.
-2. Install `ColorOS-Live-Lyrics-Bridge-v4.0.0.apk`; keep only `system` and
+2. Install `ColorOS-Live-Lyrics-Bridge-v4.1.0.apk`; keep only `system` and
    `com.android.systemui` in Bridge scope.
-3. Do not let an old Provider and a 4.0 Provider hook the same player.
+3. Do not let an old Provider and a 4.1 Provider hook the same player.
 4. Restart the player and SystemUI; reboot after the first install or a scope change.
 
 [3.8.x → 4.0 migration guide](https://github.com/Andrea-lyz/ColorOS-Live-Lyrics-Bridge/blob/4.0/docs/4.0/MIGRATION-3.8-TO-4.0.md)
