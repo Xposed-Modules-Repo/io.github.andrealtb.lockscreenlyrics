@@ -165,3 +165,10 @@ lyrics, or personal media paths.
 <p align="center">
   <img src="PY_QR.png" alt="WeChat and Alipay support QR code" width="600" height="400">
 </p>
+
+### 致谢 / Acknowledgements
+
+感谢 [Lyrico](https://github.com/Replica0110/Lyrico) 与
+[Lyrico-Plugins](https://github.com/Replica0110/Lyrico-Plugins) 在本地音乐元数据、歌词管理和
+插件化歌词源方面提供的开源工作与启发。 Thanks to Lyrico and Lyrico-Plugins for their open-source
+work and inspiration around local music metadata, lyric management, and plugin-based lyric sources.
