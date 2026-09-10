@@ -46,6 +46,21 @@
 | 汽水音乐 | `Provider-QiShui` | TrackLyric / 缓存逐字、翻译 |
 | 通用播放器 | `Provider-Universal` | 在设置 App 中选择目标播放器；system_server MediaSession 补全 |
 
+### 通用播放器 Provider
+
+`Provider-Universal 1.0.0 (1)` 为没有专属适配、但能创建 Android `MediaSession` 的播放器提供
+受控的歌词补全。它只在 `system_server` 运行；用户必须在设置 App 中主动选择目标包，未选择的音乐、
+视频和其他媒体 App 不会被观察或写入歌词。
+
+安装后打开 **Universal Player Provider**，选择播放器并配置歌词来源、逐字、翻译、原始歌词和诊断。
+它保留宿主 metadata，只向选中且活跃的会话附加标准 `MediaMetadata["lyricInfo"]`；Bridge 继续只在
+`system` 与 `com.android.systemui` 中提供 SystemUI 外观、AOD 和翻译按钮增强。不要对同一播放器同时
+使用专属 Provider 与通用 Provider。
+
+使用通用 Provider 时关闭蓝牙歌词、车载歌词或其他会用当前歌词覆写媒体标题的功能，否则首曲匹配、
+缓存与切歌识别可能不可靠。反馈时仅提供脱敏日志、目标包名和复现步骤，不要上传完整歌词、cookie、
+token 或私人媒体路径。
+
 ### 安装与升级
 
 1. 安装自己使用的 `ColorOS-Live-Lyrics-Provider-<Name>-v4.2.0.apk`；通用 Provider 在其设置
@@ -103,6 +118,24 @@ not a floating overlay; SystemUI still owns the lyric surface.
 Salt, Cone/GP, KuWo, LX/Walnut, Poweramp, Metrolist, KuGou/Concept, QQ Music, NetEase/Honor/
 modified 9.0.40, Apple Music, Spotify, QiShui, and Universal Player are shipped as separate Provider
 APKs. Universal Player selects its target apps in its settings UI and runs from `system_server`.
+
+### Universal Player Provider
+
+`Provider-Universal 1.0.0 (1)` supplies controlled lyric enrichment for players without a dedicated
+adapter that still create an Android `MediaSession`. It runs only in `system_server`; users explicitly
+select target packages in its settings UI, while unselected music, video, and other media apps are
+not observed or written with lyrics.
+
+Open **Universal Player Provider** after installation to select players and configure lyric sources,
+word timing, translations, raw lyrics, and diagnostics. It preserves host metadata and appends only
+standard `MediaMetadata["lyricInfo"]` to a selected active session. Bridge remains limited to `system`
+and `com.android.systemui` for SystemUI styling, AOD, and translation controls. Do not enable a
+dedicated Provider and Universal Provider for the same player.
+
+Disable Bluetooth, car-lyrics, or similar features that overwrite media titles with current lyric
+lines while using Universal Provider; otherwise first-track matching, caching, and track-change
+recognition can be unreliable. Reports should contain sanitized logs, the selected package, and
+reproduction steps, never complete lyrics, cookies, tokens, or personal media paths.
 
 ### Install and upgrade
 
