@@ -9,9 +9,9 @@
 为 ColorOS / OPlus 原生锁屏与 AOD 歌词页面提供完整时间轴、逐字高亮、翻译、样式与兼容
 增强。它不是悬浮窗；歌词界面仍由 SystemUI 绘制。
 
-### v4.2.0
+### v4.2.1
 
-- 12 个专属 Provider 与新增通用播放器 Provider 均使用 libxposed API 102 和静态作用域；
+- 12 个专属 Provider、通用播放器 Provider 与 Readify TTS Provider 均使用 libxposed API 102 和静态作用域；
   通用 Provider 在 `system_server` 中按用户选择的包补全标准 `lyricInfo`。
 - Bridge 继续只作用于 `system` 和 `com.android.systemui`，加强 MediaController 生命周期、
   曲目身份、歌词发布代际、绘制失败回退、缓存所有权与日志隐私。
@@ -45,6 +45,7 @@
 | Spotify | `Provider-Spotify` | 逐行/逐字，不支持翻译 |
 | 汽水音乐 | `Provider-QiShui` | TrackLyric / 缓存逐字、翻译 |
 | 通用播放器 | `Provider-Universal` | 在设置 App 中选择目标播放器；system_server MediaSession 补全 |
+| Readify AI | `Provider-Readify` | Readify 3.1.0 的事件驱动 TTS 句子窗口 |
 
 ### 通用播放器 Provider
 
@@ -63,11 +64,11 @@ token 或私人媒体路径。
 
 ### 安装与升级
 
-1. 安装自己使用的 `ColorOS-Live-Lyrics-Provider-<Name>-v4.2.0.apk`；通用 Provider 在其设置
+1. 安装自己使用的 `ColorOS-Live-Lyrics-Provider-<Name>-v4.2.1.apk`；通用 Provider 在其设置
    App 中选择目标播放器，专属 Provider 在 LSPosed 中只勾选对应播放器。
-2. 安装 `ColorOS-Live-Lyrics-Bridge-v4.2.0.apk`，Bridge 作用域只保留 `system` 与
+2. 安装 `ColorOS-Live-Lyrics-Bridge-v4.2.1.apk`，Bridge 作用域只保留 `system` 与
    `com.android.systemui`。
-3. 不要让旧 Provider 与 4.2 专属 Provider 同时 hook 一个播放器；通用 Provider 使用时关闭
+3. 不要让旧 Provider 与 4.2.1 专属 Provider 同时 hook 一个播放器；通用 Provider 使用时关闭
    蓝牙歌词、车载歌词或其他会覆盖媒体标题的功能。
 4. 重启播放器和 SystemUI；首次安装或改变 scope 后建议重启设备。
 
@@ -93,9 +94,9 @@ Enhances the native ColorOS / OPlus lock-screen and AOD lyric page with complete
 word-by-word highlighting, translations, appearance controls, and compatibility handling. It is
 not a floating overlay; SystemUI still owns the lyric surface.
 
-### v4.2.0
+### v4.2.1
 
-- The 12 dedicated Providers and the new Universal Player Provider use libxposed API 102 and static
+- The 12 dedicated Providers, Universal Player Provider, and Readify TTS Provider use libxposed API 102 and static
   scope. Universal Provider enriches standard `lyricInfo` from `system_server` for user-selected apps.
 - Bridge remains limited to `system` and `com.android.systemui` and hardens controller lifecycle,
   track identity, publication epochs, draw fallback, cache ownership, and diagnostic privacy.
@@ -116,7 +117,7 @@ not a floating overlay; SystemUI still owns the lyric surface.
 ### Provider matrix
 
 Salt, Cone/GP, KuWo, LX/Walnut, Poweramp, Metrolist, KuGou/Concept, QQ Music, NetEase/Honor/
-modified 9.0.40, Apple Music, Spotify, QiShui, and Universal Player are shipped as separate Provider
+modified 9.0.40, Apple Music, Spotify, QiShui, Universal Player, and Readify AI are shipped as separate Provider
 APKs. Universal Player selects its target apps in its settings UI and runs from `system_server`.
 
 ### Universal Player Provider
@@ -139,11 +140,11 @@ reproduction steps, never complete lyrics, cookies, tokens, or personal media pa
 
 ### Install and upgrade
 
-1. Install the required `ColorOS-Live-Lyrics-Provider-<Name>-v4.2.0.apk`. Select target apps in the
+1. Install the required `ColorOS-Live-Lyrics-Provider-<Name>-v4.2.1.apk`. Select target apps in the
    Universal Provider UI, or select only the dedicated Provider's player package in LSPosed.
-2. Install `ColorOS-Live-Lyrics-Bridge-v4.2.0.apk`; keep only `system` and
+2. Install `ColorOS-Live-Lyrics-Bridge-v4.2.1.apk`; keep only `system` and
    `com.android.systemui` in Bridge scope.
-3. Do not let an old Provider and a 4.2 dedicated Provider hook the same player. Disable Bluetooth,
+3. Do not let an old Provider and a 4.2.1 dedicated Provider hook the same player. Disable Bluetooth,
    car-lyrics, or similar media-title-overwrite features while using Universal Provider.
 4. Restart the player and SystemUI; reboot after the first install or a scope change.
 
