@@ -9,18 +9,18 @@
 为 ColorOS / OPlus 原生锁屏与 AOD 歌词页面提供完整时间轴、逐字高亮、翻译、样式与兼容
 增强。它不是悬浮窗；歌词界面仍由 SystemUI 绘制。
 
-### v4.2.1
+### v4.3.0
 
-- 12 个专属 Provider、通用播放器 Provider 与 Readify TTS Provider 均使用 libxposed API 102 和静态作用域；
+- 12 个专属 Provider、通用播放器 Provider 与 Readify TTS Provider 均继续使用 libxposed API 102 和静态作用域；
   通用 Provider 在 `system_server` 中按用户选择的包补全标准 `lyricInfo`。
-- Bridge 继续只作用于 `system` 和 `com.android.systemui`，加强 MediaController 生命周期、
-  曲目身份、歌词发布代际、绘制失败回退、缓存所有权与日志隐私。
-- 修复酷狗冷启动首曲的同曲 generation 抖动和非单调官方时间轴，《回家的路》第一句可
-  正常显示，同时完整保留制作人员 credit。
-- 修复酷我冷启动第一首歌封面降级为纯色的问题，异步结果严格绑定曲目身份与 generation。
-- 修复 OPlus 媒体 action 图标兼容、Unicode 空白占位、负速率回绕以及设置页无障碍问题。
-- 保留 4.0 的亮度渐隐、翻译按钮、配置备份/恢复、AOD 与完整外观能力。
-- Bridge 与通用 Provider 通过受限绑定同步更新 SystemUI 兼容策略，不恢复播放器进程 Hook 或旧私有歌词通道。
+- 新增默认关闭的 Salt Player 式字符上浮动画：未唱字符沉在基线下方，揭示前沿经过时沿
+  升余弦回到正常基线；与原有逐字 clip-reveal、羽化与 glow 同步。
+- “字符浮动幅度”支持 0–200%；开启“普通逐行歌词进度”后，普通 LRC 逐行歌词同样使用
+  整行线性上浮前沿。
+- 修复换行多段行只在末段动画的问题：全行前沿改为各段揭示宽度求和；绘制异常会安全回退并
+  写入 `CHAR_LIFT_UNAVAILABLE` 诊断。
+- Bridge 继续只作用于 `system` 和 `com.android.systemui`；不进入播放器进程、不创建额外
+  MediaSession，也不恢复旧私有歌词传输。
 
 ### 使用条件
 
@@ -64,11 +64,11 @@ token 或私人媒体路径。
 
 ### 安装与升级
 
-1. 安装自己使用的 `ColorOS-Live-Lyrics-Provider-<Name>-v4.2.1.apk`；通用 Provider 在其设置
+1. 安装自己使用的 `ColorOS-Live-Lyrics-Provider-<Name>-v4.3.0.apk`；通用 Provider 在其设置
    App 中选择目标播放器，专属 Provider 在 LSPosed 中只勾选对应播放器。
-2. 安装 `ColorOS-Live-Lyrics-Bridge-v4.2.1.apk`，Bridge 作用域只保留 `system` 与
+2. 安装 `ColorOS-Live-Lyrics-Bridge-v4.3.0.apk`，Bridge 作用域只保留 `system` 与
    `com.android.systemui`。
-3. 不要让旧 Provider 与 4.2.1 专属 Provider 同时 hook 一个播放器；通用 Provider 使用时关闭
+3. 不要让旧 Provider 与 4.3.0 专属 Provider 同时 hook 一个播放器；通用 Provider 使用时关闭
    蓝牙歌词、车载歌词或其他会覆盖媒体标题的功能。
 4. 重启播放器和 SystemUI；首次安装或改变 scope 后建议重启设备。
 
@@ -94,19 +94,20 @@ Enhances the native ColorOS / OPlus lock-screen and AOD lyric page with complete
 word-by-word highlighting, translations, appearance controls, and compatibility handling. It is
 not a floating overlay; SystemUI still owns the lyric surface.
 
-### v4.2.1
+### v4.3.0
 
-- The 12 dedicated Providers, Universal Player Provider, and Readify TTS Provider use libxposed API 102 and static
-  scope. Universal Provider enriches standard `lyricInfo` from `system_server` for user-selected apps.
-- Bridge remains limited to `system` and `com.android.systemui` and hardens controller lifecycle,
-  track identity, publication epochs, draw fallback, cache ownership, and diagnostic privacy.
-- Fixed KuGou first-track generation churn and non-monotonic official timelines, preserving every
-  production credit while showing the first real line on cold start.
-- Fixed first-track KuWo artwork degrading to a solid color with identity/generation-bound recovery.
-- Fixed OPlus media-action icon compatibility, Unicode blank placeholders, negative rewind, and
-  settings accessibility while retaining all 4.0 appearance, AOD, translation, and backup features.
-- Bridge and Universal Provider use restricted binding synchronization for SystemUI compatibility;
-  no player-process hook or legacy private lyric transport is restored.
+- The 12 dedicated Providers, Universal Player Provider, and Readify TTS Provider continue to use
+  libxposed API 102 and static scope. Universal Provider enriches standard `lyricInfo` from
+  `system_server` for user-selected apps.
+- An optional Salt Player-style character float-up effect moves unsung graphemes below the baseline
+  and returns them along a cosine step as the reveal front passes; it stays synchronized with the
+  existing word reveal, feather, and glow.
+- **Character float amount** supports 0–200%. Ordinary LRC-style lyrics receive the same whole-line
+  front when **Line-timed lyric progress** is enabled.
+- Wrapped multi-segment rows now sum revealed advances for one continuous front. A lift draw failure
+  safely falls back and emits a `CHAR_LIFT_UNAVAILABLE` diagnostic.
+- Bridge remains limited to `system` and `com.android.systemui`; no player-process Bridge hook,
+  additional MediaSession, or legacy private lyric transport is restored.
 
 ### Requirements
 
@@ -140,11 +141,11 @@ reproduction steps, never complete lyrics, cookies, tokens, or personal media pa
 
 ### Install and upgrade
 
-1. Install the required `ColorOS-Live-Lyrics-Provider-<Name>-v4.2.1.apk`. Select target apps in the
+1. Install the required `ColorOS-Live-Lyrics-Provider-<Name>-v4.3.0.apk`. Select target apps in the
    Universal Provider UI, or select only the dedicated Provider's player package in LSPosed.
-2. Install `ColorOS-Live-Lyrics-Bridge-v4.2.1.apk`; keep only `system` and
+2. Install `ColorOS-Live-Lyrics-Bridge-v4.3.0.apk`; keep only `system` and
    `com.android.systemui` in Bridge scope.
-3. Do not let an old Provider and a 4.2.1 dedicated Provider hook the same player. Disable Bluetooth,
+3. Do not let an old Provider and a 4.3.0 dedicated Provider hook the same player. Disable Bluetooth,
    car-lyrics, or similar media-title-overwrite features while using Universal Provider.
 4. Restart the player and SystemUI; reboot after the first install or a scope change.
 
