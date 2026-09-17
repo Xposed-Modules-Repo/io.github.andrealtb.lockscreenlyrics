@@ -9,18 +9,17 @@
 为 ColorOS / OPlus 原生锁屏与 AOD 歌词页面提供完整时间轴、逐字高亮、翻译、样式与兼容
 增强。它不是悬浮窗；歌词界面仍由 SystemUI 绘制。
 
-### v4.3.0
+### v4.3.1
 
-- 12 个专属 Provider、通用播放器 Provider 与 Readify TTS Provider 均继续使用 libxposed API 102 和静态作用域；
-  通用 Provider 在 `system_server` 中按用户选择的包补全标准 `lyricInfo`。
-- 新增默认关闭的 Salt Player 式字符上浮动画：未唱字符沉在基线下方，揭示前沿经过时沿
-  升余弦回到正常基线；与原有逐字 clip-reveal、羽化与 glow 同步。
-- “字符浮动幅度”支持 0–200%；开启“普通逐行歌词进度”后，普通 LRC 逐行歌词同样使用
-  整行线性上浮前沿。
-- 修复换行多段行只在末段动画的问题：全行前沿改为各段揭示宽度求和；绘制异常会安全回退并
-  写入 `CHAR_LIFT_UNAVAILABLE` 诊断。
-- Bridge 继续只作用于 `system` 和 `com.android.systemui`；不进入播放器进程、不创建额外
-  MediaSession，也不恢复旧私有歌词传输。
+- 修复 QQ 音乐媒体卡控制按钮错位：不再为该播放器强制 OPlus Rule0 或重新下发规则表，保留
+  系统原生按钮行；翻译按钮继续通过收藏槽原地替换呈现。
+- 翻译按钮接入增强：既无 `PlaybackState.CustomAction` 也无 OPlus heart 的播放器，由 Bridge 合成
+  framework 同类型动作兜底，点击仍在 Bridge 内处理。
+- 歌词时钟平滑：播放中小于 600 ms 的位置偏差按本地时钟修正处理，不再误判为跳变或回退。
+- KuWo Provider 1.2.0 (3)：只往宿主 metadata 追加 `lyricInfo`，不再重建 metadata、不再改写
+  封面通道（删除联网补封面与 240px 重绘），锁屏封面与歌词同时正确。
+- 仍包含 v4.3.0 的字符上浮动画（默认关闭，幅度 0–200% 可调）；Bridge 继续只作用于
+  `system` 和 `com.android.systemui`，不进入播放器进程、不创建额外 MediaSession。
 
 ### 使用条件
 
