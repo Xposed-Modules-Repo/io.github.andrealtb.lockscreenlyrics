@@ -9,6 +9,16 @@
 为 ColorOS / OPlus 原生锁屏与 AOD 歌词页面提供完整时间轴、逐字高亮、翻译、样式与兼容
 增强。它不是悬浮窗；歌词界面仍由 SystemUI 绘制。
 
+### v4.4.0
+
+- Provider 只追加 `lyricInfo`：LX、Poweramp、Apple Music、Metrolist、酷狗、网易云、QQ 音乐不再
+  重建 metadata、不再重绘封面，锁屏与 AOD 封面与关闭模块时一致；KuWo 改用同一共享实现。
+- 酷狗：切歌不再先闪官方渲染；歌词文件名与播放信息不一致的歌曲不再整首回落官方渲染；
+  多歌手署名中的连字符名字不再被拆错；歌词开头不再出现空白占位行。
+- 通用播放器 Provider 1.1.0：识别换曲时的撕裂 metadata；新增「进度粒度粗时自动逐行」；
+  近期歌词补全 App 未运行期间的曲目。
+- Bridge 行号时钟对齐：官方当前行与逐字填充共用同一平滑时钟，行边界不再回跳。
+
 ### v4.3.2
 
 - 彻底根治状态栏与控制中心媒体卡片按钮错位：Bridge 永不修改 QS 规则表（args[1]），无论 QQ 音乐还是通用 Provider（SaltPlayer、LX 等）接入的播放器，控制中心按钮 100% 保持系统和播放器原生排版，绝不错位、不丢失关闭按钮。
@@ -54,7 +64,7 @@
 
 ### 通用播放器 Provider
 
-`Provider-Universal 1.0.0 (1)` 为没有专属适配、但能创建 Android `MediaSession` 的播放器提供
+`Provider-Universal 1.1.0 (2)` 为没有专属适配、但能创建 Android `MediaSession` 的播放器提供
 受控的歌词补全。它只在 `system_server` 运行；用户必须在设置 App 中主动选择目标包，未选择的音乐、
 视频和其他媒体 App 不会被观察或写入歌词。
 
@@ -99,6 +109,20 @@ Enhances the native ColorOS / OPlus lock-screen and AOD lyric page with complete
 word-by-word highlighting, translations, appearance controls, and compatibility handling. It is
 not a floating overlay; SystemUI still owns the lyric surface.
 
+### v4.4.0
+
+- Append-only `lyricInfo`: the LX, Poweramp, Apple Music, Metrolist, KuGou, NetEase, and QQ Music
+  Providers no longer rebuild metadata or redraw artwork, so lock-screen and AOD artwork matches the
+  module-disabled state; KuWo moves onto the same shared implementation.
+- KuGou: no official-renderer flash on track switch, no whole-song fallback when the lyric file name
+  disagrees with the playing metadata, correct titles for hyphenated names in multi-artist credits,
+  and no empty row at the start of the lyrics.
+- Universal Player Provider 1.1.0: torn-metadata detection on track switch, the new
+  **Line lyrics for coarse clocks** setting, and recent-lyrics backfill for tracks played while the
+  app was not running.
+- Bridge line clock alignment: the official current row and the word fill share one smooth clock,
+  so line boundaries no longer jump back.
+
 ### v4.3.0
 
 - The 12 dedicated Providers, Universal Player Provider, and Readify TTS Provider continue to use
@@ -128,7 +152,7 @@ APKs. Universal Player selects its target apps in its settings UI and runs from 
 
 ### Universal Player Provider
 
-`Provider-Universal 1.0.0 (1)` supplies controlled lyric enrichment for players without a dedicated
+`Provider-Universal 1.1.0 (2)` supplies controlled lyric enrichment for players without a dedicated
 adapter that still create an Android `MediaSession`. It runs only in `system_server`; users explicitly
 select target packages in its settings UI, while unselected music, video, and other media apps are
 not observed or written with lyrics.
