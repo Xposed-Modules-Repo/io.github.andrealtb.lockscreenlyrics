@@ -9,6 +9,16 @@
 为 ColorOS / OPlus 原生锁屏与 AOD 歌词页面提供完整时间轴、逐字高亮、翻译、样式与兼容
 增强。它不是悬浮窗；歌词界面仍由 SystemUI 绘制。
 
+### v4.5.0
+
+- ColorOS 17 适配进入正式版：原生歌词入口、沉浸式歌词页与行模糊、字体测量、翻译按钮重绑定。
+- 动态封面进入正式版：安装同一 Release 中的动态封面 Provider 1.0.5 并在 Bridge 中授权后，锁屏
+  小封面与大封面播放方形动态封面；静态与动态封面柔和淡入淡出；新增 10–30 fps 帧率设置，调低更省电。
+- 锁屏流畅度：去掉逐帧锁屏状态跨进程查询与翻译按钮扫描卡顿，字符上浮绘制开销下降约 20%。
+- Provider：全部版本号加一；13 个专属 Provider 不再显示桌面图标（更新后重启桌面旧图标才会消失）；
+  通用播放器 Provider 1.1.2 放开除酷我外的官方播放器——**同一播放器只开一个 Provider**，专属与
+  通用二选一，同时开启会互相覆盖 `lyricInfo`。
+
 ### v4.4.0
 
 - Provider 只追加 `lyricInfo`：LX、Poweramp、Apple Music、Metrolist、酷狗、网易云、QQ 音乐不再
@@ -64,7 +74,7 @@
 
 ### 通用播放器 Provider
 
-`Provider-Universal 1.1.0 (2)` 为没有专属适配、但能创建 Android `MediaSession` 的播放器提供
+`Provider-Universal 1.1.2 (4)` 为没有专属适配、但能创建 Android `MediaSession` 的播放器提供
 受控的歌词补全。它只在 `system_server` 运行；用户必须在设置 App 中主动选择目标包，未选择的音乐、
 视频和其他媒体 App 不会被观察或写入歌词。
 
@@ -109,6 +119,20 @@ Enhances the native ColorOS / OPlus lock-screen and AOD lyric page with complete
 word-by-word highlighting, translations, appearance controls, and compatibility handling. It is
 not a floating overlay; SystemUI still owns the lyric surface.
 
+### v4.5.0
+
+- ColorOS 17 support is now stable: native lyric entry, immersive lyric page and row blur, typeface
+  measurement, and translation-button rebinding.
+- Dynamic artwork is now stable: install Dynamic Artwork Provider 1.0.5 from the same Release and
+  authorize it in Bridge to play square motion covers on the small and large lock-screen covers, with
+  soft static/motion cross-fades and a new 10–30 fps frame-rate setting (lower saves battery).
+- Lock-screen smoothness: no per-frame cross-process keyguard query, no translation-scan stalls, and
+  about 20% cheaper character float-up drawing.
+- Providers: every version moves up by one; the 13 dedicated Providers no longer show a home-screen
+  icon (the old icon disappears after a launcher restart); Universal Player Provider 1.1.2 opens the
+  official players except KuWo — **enable only one Provider per player**, dedicated or Universal, as
+  both write `lyricInfo` and overwrite each other.
+
 ### v4.4.0
 
 - Append-only `lyricInfo`: the LX, Poweramp, Apple Music, Metrolist, KuGou, NetEase, and QQ Music
@@ -152,7 +176,7 @@ APKs. Universal Player selects its target apps in its settings UI and runs from 
 
 ### Universal Player Provider
 
-`Provider-Universal 1.1.0 (2)` supplies controlled lyric enrichment for players without a dedicated
+`Provider-Universal 1.1.2 (4)` supplies controlled lyric enrichment for players without a dedicated
 adapter that still create an Android `MediaSession`. It runs only in `system_server`; users explicitly
 select target packages in its settings UI, while unselected music, video, and other media apps are
 not observed or written with lyrics.
