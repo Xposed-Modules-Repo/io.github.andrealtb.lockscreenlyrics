@@ -11,13 +11,20 @@
 
 ### v4.5.0
 
-- ColorOS 17 适配进入正式版：原生歌词入口、沉浸式歌词页与行模糊、字体测量、翻译按钮重绑定。
-- 动态封面进入正式版：安装同一 Release 中的动态封面 Provider 1.0.5 并在 Bridge 中授权后，锁屏
-  小封面与大封面播放方形动态封面；静态与动态封面柔和淡入淡出；新增 10–30 fps 帧率设置，调低更省电。
+整合 v4.4.0 之后的 C17 Preview、C16 Artwork 与 C17 Artwork Preview / Preview1 / Preview2，可从
+v4.4.0 或任一预览版直接覆盖升级。
+
+- ColorOS 17 适配：插件 ClassLoader 工厂入口、沉浸式歌词行号/缩放中心/行模糊（PR #48）、官方字体
+  变化后重新测量、酷我 C17 歌词保留（#46）、翻译按钮刷新、酷狗概念版歌词门禁、动作规则恢复。
+- 动态封面（可选）：安装同一 Release 中的动态封面 Provider 1.0.5 并在 Bridge 中授权后，锁屏小封面、
+  大封面与 C17 全屏镜像背景播放方形动态封面；Apple Music 与可选网易云来源并发查找、AM 优先；静态与
+  动态封面柔和淡入淡出；新增 10–30 fps 帧率设置，调低更省电；可选播放时保持亮屏；手动绑定、缓存
+  上限、脱敏诊断与商店连通性测试。
+- 外观：C17 光晕跟随封面取色；修复英文单词从中间换行；普通逐行进度快速切句更稳。
 - 锁屏流畅度：去掉逐帧锁屏状态跨进程查询与翻译按钮扫描卡顿，字符上浮绘制开销下降约 20%。
 - Provider：全部版本号加一；13 个专属 Provider 不再显示桌面图标（更新后重启桌面旧图标才会消失）；
-  通用播放器 Provider 1.1.2 放开除酷我外的官方播放器——**同一播放器只开一个 Provider**，专属与
-  通用二选一，同时开启会互相覆盖 `lyricInfo`。
+  通用播放器 Provider 1.1.2 修复 C17 加载失败，并放开除酷我外的官方播放器——**同一播放器只开一个
+  Provider**，专属与通用二选一，同时开启会互相覆盖 `lyricInfo`。
 
 ### v4.4.0
 
@@ -121,17 +128,25 @@ not a floating overlay; SystemUI still owns the lyric surface.
 
 ### v4.5.0
 
-- ColorOS 17 support is now stable: native lyric entry, immersive lyric page and row blur, typeface
-  measurement, and translation-button rebinding.
-- Dynamic artwork is now stable: install Dynamic Artwork Provider 1.0.5 from the same Release and
-  authorize it in Bridge to play square motion covers on the small and large lock-screen covers, with
-  soft static/motion cross-fades and a new 10–30 fps frame-rate setting (lower saves battery).
+Folds the C17 Preview, C16 Artwork, and C17 Artwork Preview / Preview1 / Preview2 released after v4.4.0
+into a stable release; update in place from v4.4.0 or any preview.
+
+- ColorOS 17 support: plugin ClassLoader factory entry, immersive row index / scale pivot / row blur
+  (PR #48), re-measuring on official typeface changes, KuWo C17 lyric retention (#46), translation-button
+  refresh, the KuGou Lite lyric gate, and action-rule restoration.
+- Dynamic artwork (optional): install Dynamic Artwork Provider 1.0.5 from the same Release and authorize
+  it in Bridge to play square motion covers on the small and large lock-screen covers and the C17
+  mirrored full-screen background; concurrent Apple Music and optional NetEase lookup with AM priority;
+  soft static/motion cross-fades; a new 10–30 fps frame-rate setting (lower saves battery); optional
+  keep-awake; manual binding, cache limit, redacted diagnostics, and a storefront reachability test.
+- Appearance: C17 glow can follow the artwork color; English words no longer break mid-word; smoother
+  fast line changes with line-timed progress.
 - Lock-screen smoothness: no per-frame cross-process keyguard query, no translation-scan stalls, and
   about 20% cheaper character float-up drawing.
 - Providers: every version moves up by one; the 13 dedicated Providers no longer show a home-screen
-  icon (the old icon disappears after a launcher restart); Universal Player Provider 1.1.2 opens the
-  official players except KuWo — **enable only one Provider per player**, dedicated or Universal, as
-  both write `lyricInfo` and overwrite each other.
+  icon (the old icon disappears after a launcher restart); Universal Player Provider 1.1.2 fixes the C17
+  load failure and opens the official players except KuWo — **enable only one Provider per player**,
+  dedicated or Universal, as both write `lyricInfo` and overwrite each other.
 
 ### v4.4.0
 
