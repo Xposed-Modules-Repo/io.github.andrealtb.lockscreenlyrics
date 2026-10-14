@@ -9,6 +9,16 @@
 为 ColorOS / OPlus 原生锁屏与 AOD 歌词页面提供完整时间轴、逐字高亮、翻译、样式与兼容
 增强。它不是悬浮窗；歌词界面仍由 SystemUI 绘制。
 
+### v4.5.1
+
+动态封面 Provider 升至 1.0.6；Bridge 与 14 个歌词 Provider 功能同 v4.5.0，可直接覆盖升级。
+
+- 本地动态封面导入：在动态封面 Provider 的手动绑定页填写专辑名后导入自己的视频（1 秒至 2 分钟）。方形
+  1080 以内的 SDR H.264 保留原画质，其余居中裁剪为方形并压缩到 1080、30 帧以内，按内容哈希私有保存，
+  锁屏使用时不联网。
+- 手动搜索改读所选市场的 Apple Music 网页专辑区，修复 US 等市场搜不到专辑；同名多版本新增“多个版本”
+  状态，宽松档自动选择；修复《=》《÷ (Deluxe)》等符号名专辑无法绑定或互相串扰。
+
 ### v4.5.0
 
 整合 v4.4.0 之后的 C17 Preview、C16 Artwork 与 C17 Artwork Preview / Preview1 / Preview2，可从
@@ -125,6 +135,19 @@ scope、复现步骤和脱敏日志。不要上传 token、cookie、完整私人
 Enhances the native ColorOS / OPlus lock-screen and AOD lyric page with complete timelines,
 word-by-word highlighting, translations, appearance controls, and compatibility handling. It is
 not a floating overlay; SystemUI still owns the lyric surface.
+
+### v4.5.1
+
+Dynamic Artwork Provider moves to 1.0.6; Bridge and the 14 lyric Providers behave as in v4.5.0 and update
+in place.
+
+- Local motion-cover import: on the Dynamic Artwork Provider's manual binding page, enter the album name and
+  import your own video (1 second to 2 minutes). A square SDR H.264 up to 1080 keeps its original picture;
+  anything else is centre-cropped and compressed to 1080 and 30 fps, kept privately by content hash, and
+  used on the lock screen without going online.
+- Manual search reads the selected storefront's Apple Music album shelf, fixing albums missing from US and
+  similar searches; same-titled editions get a "Several editions" status with an automatic pick at Loose;
+  symbol-named albums such as "=" and "÷ (Deluxe)" bind and stay apart.
 
 ### v4.5.0
 
