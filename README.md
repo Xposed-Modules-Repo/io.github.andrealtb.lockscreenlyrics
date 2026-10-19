@@ -9,6 +9,13 @@
 为 ColorOS / OPlus 原生锁屏与 AOD 歌词页面提供完整时间轴、逐字高亮、翻译、样式与兼容
 增强。它不是悬浮窗；歌词界面仍由 SystemUI 绘制。
 
+### v4.5.2
+
+Bridge 兼容与发布构建更新。同一 SystemUI / SystemUIPlugin 版本号不再当成同一份二进制；正式包启用 R8。14 个歌词 Provider 与动态封面 Provider 1.0.6 代码不变，可从 v4.5.1 直接覆盖升级。
+
+- 跨机型封面：RUS 参数、沉浸式封面写入、C17 角色、封面色和 metadata 入口按唯一日志或类型定位，核对过的混淆字母只做回退。
+- 正式 Bridge APK 使用 R8 压缩代码并收缩资源。`kotlin.coroutines.Continuation` 保留原名，避免封面流绑定被改名打断。
+
 ### v4.5.1
 
 动态封面 Provider 升至 1.0.6；Bridge 与 14 个歌词 Provider 功能同 v4.5.0，可直接覆盖升级。
@@ -135,6 +142,13 @@ scope、复现步骤和脱敏日志。不要上传 token、cookie、完整私人
 Enhances the native ColorOS / OPlus lock-screen and AOD lyric page with complete timelines,
 word-by-word highlighting, translations, appearance controls, and compatibility handling. It is
 not a floating overlay; SystemUI still owns the lyric surface.
+
+### v4.5.2
+
+A Bridge compatibility and release-build update. Identical SystemUI / SystemUIPlugin version numbers are no longer treated as the same binary, and the release APK is shrunk with R8. The 14 lyric Providers and Dynamic Artwork Provider 1.0.6 are unchanged. Update in place from v4.5.1.
+
+- Cross-device covers: RUS parameters, the immersive album writer, C17 roles, cover color, and the metadata entry are located from unique logs or types. Reviewed obfuscated letters are only a fallback.
+- The release Bridge APK minifies code and shrinks resources with R8. `kotlin.coroutines.Continuation` keeps its original name so cover-flow binding is not broken by renaming.
 
 ### v4.5.1
 
