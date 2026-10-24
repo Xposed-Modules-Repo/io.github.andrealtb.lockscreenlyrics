@@ -12,7 +12,7 @@
 ### v4.5.3
 
 realme UI7 锁屏歌词稳定性更新。修复切歌、展开歌词和亮屏时先短暂显示官方渲染的问题；修复设置页回执导致的
-SystemUI 异常；适配 UI7 歌词行字段布局，并修复字符上浮动画切换实时行时的整体下沉。14 个歌词 Provider 与
+SystemUI 异常；适配 UI7 歌词行字段布局，修复字符上浮动画切换实时行时的整体下沉，并通过完整列表与真实绑定的统一交接消除切歌歌词残留。最终正式签名 RC4 已由用户确认测试通过、切换无残留。14 个歌词 Provider 与
 动态封面 Provider 1.0.6 代码不变，可从 v4.5.2 直接覆盖升级。
 
 ### v4.5.2
@@ -119,11 +119,11 @@ token 或私人媒体路径。
 
 ### 安装与升级
 
-1. 安装自己使用的 `ColorOS-Live-Lyrics-Provider-<Name>-v4.3.0.apk`；通用 Provider 在其设置
+1. 安装自己使用的 `ColorOS-Live-Lyrics-Provider-<Name>-v4.5.3.apk`；通用 Provider 在其设置
    App 中选择目标播放器，专属 Provider 在 LSPosed 中只勾选对应播放器。
-2. 安装 `ColorOS-Live-Lyrics-Bridge-v4.3.0.apk`，Bridge 作用域只保留 `system` 与
+2. 安装 `ColorOS-Live-Lyrics-Bridge-v4.5.3.apk`，Bridge 作用域只保留 `system` 与
    `com.android.systemui`。
-3. 不要让旧 Provider 与 4.3.0 专属 Provider 同时 hook 一个播放器；通用 Provider 使用时关闭
+3. 不要让旧 Provider 与当前专属 Provider 同时 hook 一个播放器；通用 Provider 使用时关闭
    蓝牙歌词、车载歌词或其他会覆盖媒体标题的功能。
 4. 重启播放器和 SystemUI；首次安装或改变 scope 后建议重启设备。
 
@@ -148,6 +148,10 @@ scope、复现步骤和脱敏日志。不要上传 token、cookie、完整私人
 Enhances the native ColorOS / OPlus lock-screen and AOD lyric page with complete timelines,
 word-by-word highlighting, translations, appearance controls, and compatibility handling. It is
 not a floating overlay; SystemUI still owns the lyric surface.
+
+### v4.5.3
+
+A lock-screen lyric stability update: fixes the brief official-renderer flash on realme UI7 track changes, lyric expansion and screen wake; settings-receipt exceptions; UI7 row layout; and the character float-up dip. Complete native-list and real-binding handoffs prevent isolated outgoing lyric rows, and host-signature discovery keeps the release R8 renderer active. The user accepted the final signed RC4 with satisfactory track transitions and no lyric residue. The 14 lyric Providers and Dynamic Artwork Provider 1.0.6 are unchanged; update in place from v4.5.2.
 
 ### v4.5.2
 
@@ -252,11 +256,11 @@ reproduction steps, never complete lyrics, cookies, tokens, or personal media pa
 
 ### Install and upgrade
 
-1. Install the required `ColorOS-Live-Lyrics-Provider-<Name>-v4.3.0.apk`. Select target apps in the
+1. Install the required `ColorOS-Live-Lyrics-Provider-<Name>-v4.5.3.apk`. Select target apps in the
    Universal Provider UI, or select only the dedicated Provider's player package in LSPosed.
-2. Install `ColorOS-Live-Lyrics-Bridge-v4.3.0.apk`; keep only `system` and
+2. Install `ColorOS-Live-Lyrics-Bridge-v4.5.3.apk`; keep only `system` and
    `com.android.systemui` in Bridge scope.
-3. Do not let an old Provider and a 4.3.0 dedicated Provider hook the same player. Disable Bluetooth,
+3. Do not let an old Provider and the current dedicated Provider hook the same player. Disable Bluetooth,
    car-lyrics, or similar media-title-overwrite features while using Universal Provider.
 4. Restart the player and SystemUI; reboot after the first install or a scope change.
 
