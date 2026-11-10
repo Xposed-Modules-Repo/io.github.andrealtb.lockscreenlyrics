@@ -9,6 +9,10 @@
 为 ColorOS / OPlus 原生锁屏与 AOD 歌词页面提供完整时间轴、逐字高亮、翻译、样式与兼容
 增强。它不是悬浮窗；歌词界面仍由 SystemUI 绘制。
 
+### v4.5.4
+
+锁屏歌词行位修复。方括号开头的歌词不再被系统原生解析吞掉——此前会让后续每句在原生列表与自绘模型之间相差一行，表现为先失去实时高光、随后当前行偏移到歌词区上边界；自绘的测量与文字匹配同时改为读取已提交的原生行绑定。网易云音乐 Provider 升至 1.2.2，对乱序或超出曲目时长的官方显示歌词回退到解码时间轴。其余 13 个歌词 Provider 与动态封面 Provider 1.0.6 内部版本不变，可直接覆盖升级。
+
 ### v4.5.3
 
 realme UI7 锁屏歌词稳定性更新。修复切歌、展开歌词和亮屏时先短暂显示官方渲染的问题；修复设置页回执导致的
@@ -148,6 +152,10 @@ scope、复现步骤和脱敏日志。不要上传 token、cookie、完整私人
 Enhances the native ColorOS / OPlus lock-screen and AOD lyric page with complete timelines,
 word-by-word highlighting, translations, appearance controls, and compatibility handling. It is
 not a floating overlay; SystemUI still owns the lyric surface.
+
+### v4.5.4
+
+A lock-screen lyric row-alignment fix. A bracket-prefixed lyric is no longer consumed by the vendor's native parser, which previously shifted every later line by one between the native list and the custom model: the following line lost its live highlight and the live row drifted to the top edge of the lyric area. Custom measurement and matching now read the committed native row binding. The NetEase Provider moves to 1.2.2 and falls back to the decoded timeline for out-of-order or out-of-track display lyrics. The other 13 lyric Providers and Dynamic Artwork Provider 1.0.6 keep their internal versions; update in place.
 
 ### v4.5.3
 
