@@ -11,7 +11,7 @@
 
 ### v5.0.0
 
-大版本更新。Bridge 新增独立的管理应用（首页、商店、外观、状态四个标签，可隐藏的桌面图标与首次设置清单）和 Provider 商店：Provider 不再随 Bridge Release 附带，改为在商店中按各自版本安装和更新，目录与 APK 都经过签名校验，再交给系统安装器安装。商店显示每个 Provider 是否已在 LSPosed 中启用，专属 Provider 可在卡片上一键申请播放器作用域。状态页按功能显示是否生效及原因，并提供默认关闭的 60 秒短时诊断。自绘、字符上浮、封面取色和翻译按钮在多次出错时会单独暂停并回退到官方效果。Metrolist 不再提供专属 Provider，建议改用通用播放器 Provider。锁屏歌词的取词、渲染与 AOD 行为与 4.5.4 一致，可直接覆盖升级。
+大版本更新。Bridge 新增独立的管理应用（首页、商店、外观、状态四个标签，可隐藏的桌面图标与首次设置清单）和 Provider 商店：Provider 不再随 Bridge Release 附带，改为在商店中按各自版本安装和更新，目录与 APK 都经过签名校验，再交给系统安装器安装。商店显示每个 Provider 是否已在 LSPosed 中启用，专属 Provider 可在卡片上一键申请播放器作用域。状态页按功能显示是否生效及原因，并提供默认关闭的 60 秒短时诊断。自绘、字符上浮、封面取色和翻译按钮在多次出错时会单独暂停并回退到官方效果。Metrolist 不再提供专属 Provider，建议改用通用播放器 Provider。本版同时适配 ColorOS 17.0.1.x，修复部分机型歌词光晕随封面取色异常与字符上浮的高度限制，通用播放器 Provider 1.1.4 提升了歌词匹配准确性并修复已知问题。可直接覆盖升级。
 
 ### v4.5.4
 
@@ -158,7 +158,7 @@ not a floating overlay; SystemUI still owns the lyric surface.
 
 ### v5.0.0
 
-A major update. The Bridge gains its own management app (Home, Store, Appearance and Status tabs, a launcher icon that can be hidden, and a first-run setup checklist) and a Provider store: Providers no longer ship inside the Bridge Release but are installed and updated from the store at their own versions, with the catalog and every APK signature-checked before the system installer takes over. The store shows whether each Provider is enabled in LSPosed, and dedicated Providers can request their player scope from their card. The Status tab shows per feature whether it is in effect and why, with an optional 60-second diagnostic session (off by default). Custom drawing, character lift, cover colour and the translation button pause on their own after repeated failures and fall back to the official look. Metrolist no longer has a dedicated Provider; the Universal Player Provider is the suggested replacement. Lock-screen lyric intake, rendering and AOD behaviour match 4.5.4; update in place.
+A major update. The Bridge gains its own management app (Home, Store, Appearance and Status tabs, a launcher icon that can be hidden, and a first-run setup checklist) and a Provider store: Providers no longer ship inside the Bridge Release but are installed and updated from the store at their own versions, with the catalog and every APK signature-checked before the system installer takes over. The store shows whether each Provider is enabled in LSPosed, and dedicated Providers can request their player scope from their card. The Status tab shows per feature whether it is in effect and why, with an optional 60-second diagnostic session (off by default). Custom drawing, character lift, cover colour and the translation button pause on their own after repeated failures and fall back to the official look. Metrolist no longer has a dedicated Provider; the Universal Player Provider is the suggested replacement. This release also adapts to ColorOS 17.0.1.x, fixes the lyric glow following the cover colour incorrectly on some devices and a character-lift height cap, and Universal Player Provider 1.1.4 matches lyrics more accurately and fixes known issues. Update in place.
 
 ### v4.5.4
 
