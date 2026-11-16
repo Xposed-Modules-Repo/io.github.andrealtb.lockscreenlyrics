@@ -9,6 +9,10 @@
 为 ColorOS / OPlus 原生锁屏与 AOD 歌词页面提供完整时间轴、逐字高亮、翻译、样式与兼容
 增强。它不是悬浮窗；歌词界面仍由 SystemUI 绘制。
 
+### v5.0.0
+
+大版本更新。Bridge 新增独立的管理应用（首页、商店、外观、状态四个标签，可隐藏的桌面图标与首次设置清单）和 Provider 商店：Provider 不再随 Bridge Release 附带，改为在商店中按各自版本安装和更新，目录与 APK 都经过签名校验，再交给系统安装器安装。商店显示每个 Provider 是否已在 LSPosed 中启用，专属 Provider 可在卡片上一键申请播放器作用域。状态页按功能显示是否生效及原因，并提供默认关闭的 60 秒短时诊断。自绘、字符上浮、封面取色和翻译按钮在多次出错时会单独暂停并回退到官方效果。Metrolist 不再提供专属 Provider，建议改用通用播放器 Provider。锁屏歌词的取词、渲染与 AOD 行为与 4.5.4 一致，可直接覆盖升级。
+
 ### v4.5.4
 
 锁屏歌词行位修复。方括号开头的歌词不再被系统原生解析吞掉——此前会让后续每句在原生列表与自绘模型之间相差一行，表现为先失去实时高光、随后当前行偏移到歌词区上边界；自绘的测量与文字匹配同时改为读取已提交的原生行绑定。网易云音乐 Provider 升至 1.2.2，对乱序或超出曲目时长的官方显示歌词回退到解码时间轴。其余 13 个歌词 Provider 与动态封面 Provider 1.0.6 内部版本不变，可直接覆盖升级。
@@ -85,7 +89,7 @@ v4.4.0 或任一预览版直接覆盖升级。
 
 - 已 Root，并安装支持 **libxposed API 102** 的 LSPosed / LSP 管理器；建议 LSPosed 2.2.0+。
 - 系统本身包含 ColorOS / OPlus 原生锁屏歌词页面。
-- 当前主要围绕 ColorOS 16 验证；系统和播放器大版本更新可能需要重新适配。
+- 5.0 在 ColorOS 17（PJZ110）上完成设备验收，SystemUI 16.99.12 / 17.99.02 的其他已知构建做了静态兼容核对；系统和播放器大版本更新可能需要重新适配。
 
 ### Provider 矩阵
 
@@ -96,7 +100,6 @@ v4.4.0 或任一预览版直接覆盖升级。
 | 酷我 | `Provider-KuWo` | 官方 payload 追加逐字/翻译 |
 | LX / Walnut | `Provider-LX` | 逐字、翻译、蓝牙身份与封面兼容 |
 | Poweramp | `Provider-Poweramp` | sidecar / 内嵌歌词、翻译 |
-| Metrolist | `Provider-Metrolist` | 多歌词源，不支持翻译 |
 | 酷狗 / 概念版 | `Provider-KuGou` | 官方 payload 追加逐字/翻译 |
 | QQ 音乐官方版 | `Provider-QQ` | QRC 逐字、翻译 |
 | 网易云 / 荣耀 / 9.0.40 | `Provider-NetEase` | 官方追加或构造逐字/翻译 |
@@ -108,7 +111,7 @@ v4.4.0 或任一预览版直接覆盖升级。
 
 ### 通用播放器 Provider
 
-`Provider-Universal 1.1.2 (4)` 为没有专属适配、但能创建 Android `MediaSession` 的播放器提供
+`Provider-Universal 1.1.4 (6)` 为没有专属适配、但能创建 Android `MediaSession` 的播放器提供
 受控的歌词补全。它只在 `system_server` 运行；用户必须在设置 App 中主动选择目标包，未选择的音乐、
 视频和其他媒体 App 不会被观察或写入歌词。
 
@@ -123,10 +126,10 @@ token 或私人媒体路径。
 
 ### 安装与升级
 
-1. 安装自己使用的 `ColorOS-Live-Lyrics-Provider-<Name>-v4.5.3.apk`；通用 Provider 在其设置
-   App 中选择目标播放器，专属 Provider 在 LSPosed 中只勾选对应播放器。
-2. 安装 `ColorOS-Live-Lyrics-Bridge-v4.5.3.apk`，Bridge 作用域只保留 `system` 与
+1. 安装 `ColorOS-Live-Lyrics-Bridge-v5.0.0.apk`，Bridge 作用域只保留 `system` 与
    `com.android.systemui`。
+2. 打开 Bridge，在“商店”中安装自己使用的 Provider；专属 Provider 可在卡片上申请作用域，
+   在 LSPosed 中只勾选对应播放器；通用 Provider 在其设置 App 中选择目标播放器。
 3. 不要让旧 Provider 与当前专属 Provider 同时 hook 一个播放器；通用 Provider 使用时关闭
    蓝牙歌词、车载歌词或其他会覆盖媒体标题的功能。
 4. 重启播放器和 SystemUI；首次安装或改变 scope 后建议重启设备。
@@ -152,6 +155,10 @@ scope、复现步骤和脱敏日志。不要上传 token、cookie、完整私人
 Enhances the native ColorOS / OPlus lock-screen and AOD lyric page with complete timelines,
 word-by-word highlighting, translations, appearance controls, and compatibility handling. It is
 not a floating overlay; SystemUI still owns the lyric surface.
+
+### v5.0.0
+
+A major update. The Bridge gains its own management app (Home, Store, Appearance and Status tabs, a launcher icon that can be hidden, and a first-run setup checklist) and a Provider store: Providers no longer ship inside the Bridge Release but are installed and updated from the store at their own versions, with the catalog and every APK signature-checked before the system installer takes over. The store shows whether each Provider is enabled in LSPosed, and dedicated Providers can request their player scope from their card. The Status tab shows per feature whether it is in effect and why, with an optional 60-second diagnostic session (off by default). Custom drawing, character lift, cover colour and the translation button pause on their own after repeated failures and fall back to the official look. Metrolist no longer has a dedicated Provider; the Universal Player Provider is the suggested replacement. Lock-screen lyric intake, rendering and AOD behaviour match 4.5.4; update in place.
 
 ### v4.5.4
 
@@ -236,17 +243,17 @@ into a stable release; update in place from v4.4.0 or any preview.
 
 - Root and an LSPosed/LSP manager with **libxposed API 102** support; LSPosed 2.2.0+ is recommended.
 - A ColorOS/OPlus ROM that already includes the native lock-screen lyric page.
-- Current validation focuses on ColorOS 16; major system/player updates can require renewed support.
+- 5.0 is device-accepted on ColorOS 17 (PJZ110), with static compatibility checks for other known SystemUI 16.99.12 / 17.99.02 builds; major system/player updates can require renewed support.
 
 ### Provider matrix
 
-Salt, Cone/GP, KuWo, LX/Walnut, Poweramp, Metrolist, KuGou/Concept, QQ Music, NetEase/Honor/
-modified 9.0.40, Apple Music, Spotify, QiShui, Universal Player, and Readify AI are shipped as separate Provider
-APKs. Universal Player selects its target apps in its settings UI and runs from `system_server`.
+Salt, Cone/GP, KuWo, LX/Walnut, Poweramp, KuGou/Concept, QQ Music, NetEase/Honor/
+modified 9.0.40, Apple Music, Spotify, QiShui, Universal Player, and Readify AI are separate Provider
+apps, installed and updated from the Bridge store. Universal Player selects its target apps in its settings UI and runs from `system_server`.
 
 ### Universal Player Provider
 
-`Provider-Universal 1.1.2 (4)` supplies controlled lyric enrichment for players without a dedicated
+`Provider-Universal 1.1.4 (6)` supplies controlled lyric enrichment for players without a dedicated
 adapter that still create an Android `MediaSession`. It runs only in `system_server`; users explicitly
 select target packages in its settings UI, while unselected music, video, and other media apps are
 not observed or written with lyrics.
@@ -264,10 +271,10 @@ reproduction steps, never complete lyrics, cookies, tokens, or personal media pa
 
 ### Install and upgrade
 
-1. Install the required `ColorOS-Live-Lyrics-Provider-<Name>-v4.5.3.apk`. Select target apps in the
-   Universal Provider UI, or select only the dedicated Provider's player package in LSPosed.
-2. Install `ColorOS-Live-Lyrics-Bridge-v4.5.3.apk`; keep only `system` and
+1. Install `ColorOS-Live-Lyrics-Bridge-v5.0.0.apk`; keep only `system` and
    `com.android.systemui` in Bridge scope.
+2. Open the Bridge and install your Provider from the **Store**. A dedicated Provider can request its
+   scope from its card (select only its player in LSPosed); Universal Provider selects target apps in its UI.
 3. Do not let an old Provider and the current dedicated Provider hook the same player. Disable Bluetooth,
    car-lyrics, or similar media-title-overwrite features while using Universal Provider.
 4. Restart the player and SystemUI; reboot after the first install or a scope change.
