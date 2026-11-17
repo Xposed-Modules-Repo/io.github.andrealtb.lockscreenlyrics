@@ -9,6 +9,10 @@
 为 ColorOS / OPlus 原生锁屏与 AOD 歌词页面提供完整时间轴、逐字高亮、翻译、样式与兼容
 增强。它不是悬浮窗；歌词界面仍由 SystemUI 绘制。
 
+### v5.1.0
+
+新增 TTML 对唱左右分侧、优化换行动效，并支持光锥 GO 的翻译按钮；首页增加捐赠入口。光锥 Provider 1.1.4 支持 TTML 与 GO，通用 Provider 1.1.5 新增酷狗、TTML 优先及歌词格式标签。Apple Music 官方来源需要订阅，付费账号的官方取词尚未进行设备验证。ColorOS 16 的新换行路径仍需设备验证。
+
 ### v5.0.0
 
 大版本更新。Bridge 新增独立的管理应用（首页、商店、外观、状态四个标签，可隐藏的桌面图标与首次设置清单）和 Provider 商店：Provider 不再随 Bridge Release 附带，改为在商店中按各自版本安装和更新，目录与 APK 都经过签名校验，再交给系统安装器安装。商店显示每个 Provider 是否已在 LSPosed 中启用，专属 Provider 可在卡片上一键申请播放器作用域。状态页按功能显示是否生效及原因，并提供默认关闭的 60 秒短时诊断。自绘、字符上浮、封面取色和翻译按钮在多次出错时会单独暂停并回退到官方效果。Metrolist 不再提供专属 Provider，建议改用通用播放器 Provider。本版同时适配 ColorOS 17.0.1.x，修复部分机型歌词光晕随封面取色异常与字符上浮的高度限制，通用播放器 Provider 1.1.4 提升了歌词匹配准确性并修复已知问题。可直接覆盖升级。
@@ -96,7 +100,7 @@ v4.4.0 或任一预览版直接覆盖升级。
 | 播放器 | 额外模块 | 能力 |
 |---|---|---|
 | Salt Player | `Provider-Salt` | 逐字、翻译 |
-| ConePlayer / GP | `Provider-Cone` | 完整时间轴、翻译 |
+| ConePlayer / GP / GO | `Provider-Cone` | 完整时间轴、翻译、TTML 对唱 |
 | 酷我 | `Provider-KuWo` | 官方 payload 追加逐字/翻译 |
 | LX / Walnut | `Provider-LX` | 逐字、翻译、蓝牙身份与封面兼容 |
 | Poweramp | `Provider-Poweramp` | sidecar / 内嵌歌词、翻译 |
@@ -111,7 +115,7 @@ v4.4.0 或任一预览版直接覆盖升级。
 
 ### 通用播放器 Provider
 
-`Provider-Universal 1.1.4 (6)` 为没有专属适配、但能创建 Android `MediaSession` 的播放器提供
+`Provider-Universal 1.1.5 (7)` 为没有专属适配、但能创建 Android `MediaSession` 的播放器提供
 受控的歌词补全。它只在 `system_server` 运行；用户必须在设置 App 中主动选择目标包，未选择的音乐、
 视频和其他媒体 App 不会被观察或写入歌词。
 
@@ -126,7 +130,7 @@ token 或私人媒体路径。
 
 ### 安装与升级
 
-1. 安装 `ColorOS-Live-Lyrics-Bridge-v5.0.0.apk`，Bridge 作用域只保留 `system` 与
+1. 安装 `ColorOS-Live-Lyrics-Bridge-v5.1.0.apk`，Bridge 作用域只保留 `system` 与
    `com.android.systemui`。
 2. 打开 Bridge，在“商店”中安装自己使用的 Provider；专属 Provider 可在卡片上申请作用域，
    在 LSPosed 中只勾选对应播放器；通用 Provider 在其设置 App 中选择目标播放器。
@@ -155,6 +159,10 @@ scope、复现步骤和脱敏日志。不要上传 token、cookie、完整私人
 Enhances the native ColorOS / OPlus lock-screen and AOD lyric page with complete timelines,
 word-by-word highlighting, translations, appearance controls, and compatibility handling. It is
 not a floating overlay; SystemUI still owns the lyric surface.
+
+### v5.1.0
+
+Adds TTML duet sides, smoother line changes, the 光锥 GO translation button and a donation card on Home. Cone Provider 1.1.4 adds TTML and GO support; Universal Provider 1.1.5 adds KuGou, TTML-first and lyric-format labels. The official Apple Music source needs a subscription and has not yet been device-verified with a subscribed account. The new ColorOS 16 line-change path also awaits device verification.
 
 ### v5.0.0
 
@@ -247,13 +255,13 @@ into a stable release; update in place from v4.4.0 or any preview.
 
 ### Provider matrix
 
-Salt, Cone/GP, KuWo, LX/Walnut, Poweramp, KuGou/Concept, QQ Music, NetEase/Honor/
+Salt, Cone/GP/GO, KuWo, LX/Walnut, Poweramp, KuGou/Concept, QQ Music, NetEase/Honor/
 modified 9.0.40, Apple Music, Spotify, QiShui, Universal Player, and Readify AI are separate Provider
 apps, installed and updated from the Bridge store. Universal Player selects its target apps in its settings UI and runs from `system_server`.
 
 ### Universal Player Provider
 
-`Provider-Universal 1.1.4 (6)` supplies controlled lyric enrichment for players without a dedicated
+`Provider-Universal 1.1.5 (7)` supplies controlled lyric enrichment for players without a dedicated
 adapter that still create an Android `MediaSession`. It runs only in `system_server`; users explicitly
 select target packages in its settings UI, while unselected music, video, and other media apps are
 not observed or written with lyrics.
@@ -271,7 +279,7 @@ reproduction steps, never complete lyrics, cookies, tokens, or personal media pa
 
 ### Install and upgrade
 
-1. Install `ColorOS-Live-Lyrics-Bridge-v5.0.0.apk`; keep only `system` and
+1. Install `ColorOS-Live-Lyrics-Bridge-v5.1.0.apk`; keep only `system` and
    `com.android.systemui` in Bridge scope.
 2. Open the Bridge and install your Provider from the **Store**. A dedicated Provider can request its
    scope from its card (select only its player in LSPosed); Universal Provider selects target apps in its UI.
