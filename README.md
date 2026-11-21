@@ -9,6 +9,10 @@
 为 ColorOS / OPlus 原生锁屏与 AOD 歌词页面提供完整时间轴、逐字高亮、翻译、样式与兼容
 增强。它不是悬浮窗；歌词界面仍由 SystemUI 绘制。
 
+### v5.1.2
+
+修复锁屏动态封面“时灵时不灵”：网易云开启蓝牙/车载歌词时动态封面播放几秒即被停掉、封面 Provider 被系统清理后不再出现等问题，连接与渲染失败会自动重试。商店新增“用其他应用安装”，已安装插件签名与商店不同时也可走下载安装流程。同期商店更新动态封面 Provider 1.0.7、椒盐音乐 1.1.4、通用播放器 1.1.6。可直接覆盖升级。
+
 ### v5.1.1
 
 修复网易云音乐等播放器中，逐字歌词与系统显示歌词写法不同（例如逐字歌词把词替换为 `***`）时锁屏出现空白占位行、该行不显示的问题：系统歌词行改为按时间对齐绑定逐字行。本次没有 Provider 更新，可直接覆盖升级。
@@ -134,7 +138,7 @@ token 或私人媒体路径。
 
 ### 安装与升级
 
-1. 安装 `ColorOS-Live-Lyrics-Bridge-v5.1.1.apk`，Bridge 作用域只保留 `system` 与
+1. 安装 `ColorOS-Live-Lyrics-Bridge-v5.1.2.apk`，Bridge 作用域只保留 `system` 与
    `com.android.systemui`。
 2. 打开 Bridge，在“商店”中安装自己使用的 Provider；专属 Provider 可在卡片上申请作用域，
    在 LSPosed 中只勾选对应播放器；通用 Provider 在其设置 App 中选择目标播放器。
@@ -163,6 +167,10 @@ scope、复现步骤和脱敏日志。不要上传 token、cookie、完整私人
 Enhances the native ColorOS / OPlus lock-screen and AOD lyric page with complete timelines,
 word-by-word highlighting, translations, appearance controls, and compatibility handling. It is
 not a floating overlay; SystemUI still owns the lyric surface.
+
+### v5.1.2
+
+Fixes lock-screen motion covers that came and went: with NetEase Bluetooth/car lyrics on, a playing motion cover stopped after a few seconds, and after the system stopped the artwork Provider the cover did not return. Connection and render failures now retry automatically. The Store adds "install with another app", and a plugin signed differently from the store version can still go through the download-and-install flow. Store updates in the same period: Dynamic Artwork Provider 1.0.7, Salt 1.1.4, Universal 1.1.6. Update in place.
 
 ### v5.1.1
 
@@ -287,7 +295,7 @@ reproduction steps, never complete lyrics, cookies, tokens, or personal media pa
 
 ### Install and upgrade
 
-1. Install `ColorOS-Live-Lyrics-Bridge-v5.1.1.apk`; keep only `system` and
+1. Install `ColorOS-Live-Lyrics-Bridge-v5.1.2.apk`; keep only `system` and
    `com.android.systemui` in Bridge scope.
 2. Open the Bridge and install your Provider from the **Store**. A dedicated Provider can request its
    scope from its card (select only its player in LSPosed); Universal Provider selects target apps in its UI.
