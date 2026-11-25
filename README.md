@@ -9,6 +9,10 @@
 为 ColorOS / OPlus 原生锁屏与 AOD 歌词页面提供完整时间轴、逐字高亮、翻译、样式与兼容
 增强。它不是悬浮窗；歌词界面仍由 SystemUI 绘制。
 
+### v5.1.3
+
+修复部分设备更新到 5.1.2 后开机阶段 SystemUI 反复崩溃（`libdexkit.so` 中的 SIGABRT）：DexKit 升级到 2.3.0，修复其线程池在高负载下自我等待导致的中止。同期商店更新 QQ 音乐 Provider 1.2.4（修复 QQ 音乐 21.0 与部分歌曲翻译缺失）。可直接覆盖升级。
+
 ### v5.1.2
 
 修复锁屏动态封面“时灵时不灵”：网易云开启蓝牙/车载歌词时动态封面播放几秒即被停掉、封面 Provider 被系统清理后不再出现等问题，连接与渲染失败会自动重试。商店新增“用其他应用安装”，已安装插件签名与商店不同时也可走下载安装流程。同期商店更新动态封面 Provider 1.0.7、椒盐音乐 1.1.4、通用播放器 1.1.6。可直接覆盖升级。
@@ -138,7 +142,7 @@ token 或私人媒体路径。
 
 ### 安装与升级
 
-1. 安装 `ColorOS-Live-Lyrics-Bridge-v5.1.2.apk`，Bridge 作用域只保留 `system` 与
+1. 安装 `ColorOS-Live-Lyrics-Bridge-v5.1.3.apk`，Bridge 作用域只保留 `system` 与
    `com.android.systemui`。
 2. 打开 Bridge，在“商店”中安装自己使用的 Provider；专属 Provider 可在卡片上申请作用域，
    在 LSPosed 中只勾选对应播放器；通用 Provider 在其设置 App 中选择目标播放器。
@@ -167,6 +171,10 @@ scope、复现步骤和脱敏日志。不要上传 token、cookie、完整私人
 Enhances the native ColorOS / OPlus lock-screen and AOD lyric page with complete timelines,
 word-by-word highlighting, translations, appearance controls, and compatibility handling. It is
 not a floating overlay; SystemUI still owns the lyric surface.
+
+### v5.1.3
+
+Fixes repeated SystemUI crashes during boot on some devices after updating to 5.1.2 (SIGABRT in `libdexkit.so`): DexKit is updated to 2.3.0, which fixes a thread pool joining itself under load. Store update in the same period: QQ Music Provider 1.2.4 (missing translations on QQ Music 21.0 and on some songs). Update in place.
 
 ### v5.1.2
 
@@ -295,7 +303,7 @@ reproduction steps, never complete lyrics, cookies, tokens, or personal media pa
 
 ### Install and upgrade
 
-1. Install `ColorOS-Live-Lyrics-Bridge-v5.1.2.apk`; keep only `system` and
+1. Install `ColorOS-Live-Lyrics-Bridge-v5.1.3.apk`; keep only `system` and
    `com.android.systemui` in Bridge scope.
 2. Open the Bridge and install your Provider from the **Store**. A dedicated Provider can request its
    scope from its card (select only its player in LSPosed); Universal Provider selects target apps in its UI.
